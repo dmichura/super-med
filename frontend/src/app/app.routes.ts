@@ -27,6 +27,17 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'patient-portal',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['PATIENT'],
+        },
+        loadComponent: () =>
+            import(
+            './features/patient-portal/pages/patient-portal-dashboard/patient-portal-dashboard'
+            ).then((m) => m.PatientPortalDashboard),
+        },
+      {
         path: 'patients',
         canActivate: [roleGuard],
         data: {

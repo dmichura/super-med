@@ -1,0 +1,130 @@
+<section class="patient-portal-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Portal Pacjenta</p>
+      <h2>Panel pacjenta</h2>
+      <p>
+        Widok testowy Portalu Pacjenta. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/patient-portal/dashboard</strong>.
+      </p>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie Portalu Pacjenta...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && dashboardData) {
+    @if (!dashboardData.profile.isAuthorized) {
+      <div class="verification-card">
+        <strong>Konto oczekuje na weryfikację</strong>
+        <p>
+          Dostęp do pełnej dokumentacji medycznej zostanie odblokowany po osobistej
+          weryfikacji tożsamości w placówce.
+        </p>
+      </div>
+    }
+
+    <div class="details-grid">
+      <article class="details-card">
+        <p class="card-label">Dane pacjenta</p>
+
+        <dl>
+          <div>
+            <dt>Imię i nazwisko</dt>
+            <dd>
+              {{ dashboardData.profile.firstName }} {{ dashboardData.profile.lastName }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>PESEL</dt>
+            <dd>{{ dashboardData.profile.pesel }}</dd>
+          </div>
+
+          <div>
+            <dt>Email</dt>
+            <dd>{{ dashboardData.profile.email }}</dd>
+          </div>
+
+          <div>
+            <dt>Lekarz prowadzący</dt>
+            <dd>{{ dashboardData.profile.assignedDoctorName || 'Nie przypisano' }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="details-card">
+        <p class="card-label">Status konta</p>
+
+        <div class="status-box">
+          <span class="badge" [class.badge-warning]="!dashboardData.profile.isAuthorized">
+            {{ dashboardData.profile.isAuthorized ? 'Zweryfikowane' : 'Oczekuje' }}
+          </span>
+
+          <p>
+            Rejestracja online tworzy konto pacjenta, ale dostęp do danych medycznych
+            wymaga potwierdzenia tożsamości przez pracownika placówki.
+          </p>
+        </div>
+      </article>
+    </div>
+
+    <article class="section-card">
+      <div class="section-header">
+        <p class="card-label">Nadchodzące wizyty</p>
+      </div>
+
+      <div class="items-list">
+        @for (visit of dashboardData.upcomingVisits; track visit.id) {
+          <div class="item-row">
+            <div>
+              <strong>{{ visit.reason }}</strong>
+              <p>{{ visit.date }} · {{ visit.doctorName }} · {{ visit.departmentName }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="section-card">
+      <div class="section-header">
+        <p class="card-label">Ostatnia dokumentacja medyczna</p>
+      </div>
+
+      <div class="items-list">
+        @for (record of dashboardData.latestMedicalRecords; track record.id) {
+          <div class="item-row">
+            <div>
+              <strong>{{ record.title }}</strong>
+              <p>{{ record.type }} · {{ record.createdAt }} · {{ record.doctorName }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="section-card">
+      <div class="section-header">
+        <p class="card-label">Dokumenty pacjenta</p>
+      </div>
+
+      <div class="items-list">
+        @for (document of dashboardData.documents; track document.id) {
+          <div class="item-row">
+            <div>
+              <strong>{{ document.fileName }}</strong>
+              <p>{{ document.type }} · {{ document.uploadedAt }}</p>
+            </div>
+
+            <span class="badge">{{ document.status }}</span>
+          </div>
+        }
+      </div>
+    </article>
+  }
+</section>
