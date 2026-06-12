@@ -1,0 +1,68 @@
+<section class="medical-records-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Dokumentacja medyczna</p>
+      <h2>Lista wpisów medycznych</h2>
+      <p>
+        Widok testowy dokumentacji medycznej. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/medical-records</strong>.
+      </p>
+    </div>
+
+    <button type="button">Dodaj wpis</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie dokumentacji medycznej...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Pacjent</th>
+            <th>PESEL</th>
+            <th>Lekarz</th>
+            <th>Typ</th>
+            <th>Tytuł</th>
+            <th>Oddział</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Wrażliwe</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (record of medicalRecords; track record.id) {
+            <tr>
+              <td>
+                <strong>{{ record.patientName }}</strong>
+              </td>
+              <td>{{ record.patientPesel }}</td>
+              <td>{{ record.doctorName }}</td>
+              <td>{{ getTypeLabel(record.type) }}</td>
+              <td>{{ record.title }}</td>
+              <td>{{ record.departmentName }}</td>
+              <td>{{ record.createdAt }}</td>
+              <td>
+                <span class="badge" [class.badge-muted]="record.status === 'ARCHIVED'">
+                  {{ getStatusLabel(record.status) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge sensitive-badge">
+                  {{ record.isSensitive ? 'Tak' : 'Nie' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
