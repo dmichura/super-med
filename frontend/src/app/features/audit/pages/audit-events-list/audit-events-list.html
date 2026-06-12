@@ -1,0 +1,68 @@
+<section class="audit-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Audyt</p>
+      <h2>Zdarzenia dostępu</h2>
+      <p>
+        Widok testowy audytu. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/audit/events</strong>.
+      </p>
+    </div>
+
+    <button type="button">Eksportuj audyt</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie zdarzeń audytu...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Data i godzina</th>
+            <th>Użytkownik</th>
+            <th>Rola</th>
+            <th>Akcja</th>
+            <th>Zasób</th>
+            <th>Nazwa zasobu</th>
+            <th>IP</th>
+            <th>Wynik</th>
+            <th>Powód</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (event of auditEvents; track event.id) {
+            <tr>
+              <td>{{ event.occurredAt }}</td>
+              <td>
+                <strong>{{ event.actorName }}</strong>
+              </td>
+              <td>{{ event.actorRole }}</td>
+              <td>{{ getActionLabel(event.action) }}</td>
+              <td>{{ getResourceTypeLabel(event.resourceType) }}</td>
+              <td>{{ event.resourceName }}</td>
+              <td>{{ event.ipAddress }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.badge-warning]="event.result === 'DENIED'"
+                  [class.badge-error]="event.result === 'ERROR'"
+                >
+                  {{ getResultLabel(event.result) }}
+                </span>
+              </td>
+              <td>{{ event.reason }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

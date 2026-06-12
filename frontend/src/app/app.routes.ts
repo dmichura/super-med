@@ -114,6 +114,17 @@ export const routes: Routes = [
             (m) => m.ReportsDashboard,
             ),
         },
+        {
+        path: 'audit',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+            import('./features/audit/pages/audit-events-list/audit-events-list').then(
+            (m) => m.AuditEventsList,
+            ),
+        },
         
       {
         path: '',
