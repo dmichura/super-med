@@ -1,0 +1,117 @@
+<section class="reports-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Raporty</p>
+      <h2>Dashboard raportowy</h2>
+      <p>
+        Widok testowy raportów operacyjnych. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/reports/dashboard</strong>.
+      </p>
+    </div>
+
+    <button type="button">Eksportuj raport</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie raportów...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && reportData) {
+    <div class="summary-grid">
+      <article class="summary-card">
+        <p>Pacjenci</p>
+        <strong>{{ reportData.summary.totalPatients }}</strong>
+        <span>łącznie w systemie</span>
+      </article>
+
+      <article class="summary-card warning">
+        <p>Autoryzacje</p>
+        <strong>{{ reportData.summary.pendingPatientAuthorizations }}</strong>
+        <span>oczekuje na weryfikację</span>
+      </article>
+
+      <article class="summary-card">
+        <p>Pracownicy</p>
+        <strong>{{ reportData.summary.activeEmployees }}</strong>
+        <span>aktywnych kont</span>
+      </article>
+
+      <article class="summary-card">
+        <p>Wolne łóżka</p>
+        <strong>{{ reportData.summary.freeBeds }}</strong>
+        <span>dostępne miejsca</span>
+      </article>
+
+      <article class="summary-card">
+        <p>Dokumentacja</p>
+        <strong>{{ reportData.summary.medicalRecords }}</strong>
+        <span>wpisy medyczne</span>
+      </article>
+
+      <article class="summary-card warning">
+        <p>Dane wrażliwe</p>
+        <strong>{{ reportData.summary.sensitiveMedicalRecords }}</strong>
+        <span>wpisy wymagające audytu</span>
+      </article>
+
+      <article class="summary-card">
+        <p>Audyt</p>
+        <strong>{{ reportData.summary.auditEvents }}</strong>
+        <span>zdarzeń dostępu</span>
+      </article>
+
+      <article class="summary-card">
+        <p>Zajęte łóżka</p>
+        <strong>{{ reportData.summary.occupiedBeds }}</strong>
+        <span>aktualne obłożenie</span>
+      </article>
+    </div>
+
+    <article class="report-card">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">Obłożenie</p>
+          <h3>Obłożenie oddziałów</h3>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Oddział</th>
+              <th>Wolne</th>
+              <th>Zajęte</th>
+              <th>Zablokowane</th>
+              <th>Dezynfekcja</th>
+              <th>Obłożenie</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (department of reportData.departmentOccupancy; track department.departmentName) {
+              <tr>
+                <td>
+                  <strong>{{ department.departmentName }}</strong>
+                </td>
+                <td>{{ department.freeBeds }}</td>
+                <td>{{ department.occupiedBeds }}</td>
+                <td>{{ department.blockedBeds }}</td>
+                <td>{{ department.cleaningBeds }}</td>
+                <td>
+                  <span class="badge">
+                    {{ getOccupancyPercent(department.totalBeds, department.occupiedBeds) }}%
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  }
+</section>

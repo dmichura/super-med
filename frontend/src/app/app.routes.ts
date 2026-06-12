@@ -103,6 +103,17 @@ export const routes: Routes = [
             './features/medical-records/pages/medical-record-details/medical-record-details'
             ).then((m) => m.MedicalRecordDetails),
         },
+        {
+        path: 'reports',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+            import('./features/reports/pages/reports-dashboard/reports-dashboard').then(
+            (m) => m.ReportsDashboard,
+            ),
+        },
         
       {
         path: '',
