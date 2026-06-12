@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
-import { MainLayout } from './layout/main-layout/main-layout';
 import { roleGuard } from './core/guards/role-guard';
+import { MainLayout } from './layout/main-layout/main-layout';
 
 export const routes: Routes = [
   {
@@ -30,124 +30,123 @@ export const routes: Routes = [
         path: 'patient-portal',
         canActivate: [roleGuard],
         data: {
-            roles: ['PATIENT'],
+          roles: ['PATIENT'],
         },
         loadComponent: () =>
-            import(
+          import(
             './features/patient-portal/pages/patient-portal-dashboard/patient-portal-dashboard'
-            ).then((m) => m.PatientPortalDashboard),
-        },
+          ).then((m) => m.PatientPortalDashboard),
+      },
       {
         path: 'patients',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'EMPLOYEE'],
+          roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import('./features/patients/pages/patients-list/patients-list').then(
+          import('./features/patients/pages/patients-list/patients-list').then(
             (m) => m.PatientsList,
-        ),
-        },
-        {
+          ),
+      },
+      {
         path: 'patients/:id',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'EMPLOYEE'],
+          roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import('./features/patients/pages/patient-details/patient-details').then(
-            (m) => m.PatientDetails,
-            ),
-        },
-        {
+          import(
+            './features/patients/pages/patient-details/patient-details'
+          ).then((m) => m.PatientDetails),
+      },
+      {
         path: 'employees',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'DIRECTOR'],
+          roles: ['ADMIN', 'DIRECTOR'],
         },
         loadComponent: () =>
-            import('./features/employees/pages/employees-list/employees-list').then(
-            (m) => m.EmployeesList,
-            ),
-        },
-        {
+          import(
+            './features/employees/pages/employees-list/employees-list'
+          ).then((m) => m.EmployeesList),
+      },
+      {
         path: 'employees/:id',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'DIRECTOR'],
+          roles: ['ADMIN', 'DIRECTOR'],
         },
         loadComponent: () =>
-            import('./features/employees/pages/employee-details/employee-details').then(
-            (m) => m.EmployeeDetails,
-            ),
-        },
-        {
+          import(
+            './features/employees/pages/employee-details/employee-details'
+          ).then((m) => m.EmployeeDetails),
+      },
+      {
         path: 'hospital-structure',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'DIRECTOR', 'EMPLOYEE'],
+          roles: ['ADMIN', 'DIRECTOR', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import(
+          import(
             './features/hospital-structure/pages/hospital-structure-list/hospital-structure-list'
-            ).then((m) => m.HospitalStructureList),
-        },
-        {
+          ).then((m) => m.HospitalStructureList),
+      },
+      {
         path: 'medical-records',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'EMPLOYEE'],
+          roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import(
+          import(
             './features/medical-records/pages/medical-records-list/medical-records-list'
-            ).then((m) => m.MedicalRecordsList),
-        },
-        {
+          ).then((m) => m.MedicalRecordsList),
+      },
+      {
         path: 'medical-records/:id',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'EMPLOYEE'],
+          roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import(
+          import(
             './features/medical-records/pages/medical-record-details/medical-record-details'
-            ).then((m) => m.MedicalRecordDetails),
-        },
-        {
-        path: 'reports',
-        canActivate: [roleGuard],
-        data: {
-            roles: ['ADMIN', 'DIRECTOR'],
-        },
-        loadComponent: () =>
-            import('./features/reports/pages/reports-dashboard/reports-dashboard').then(
-            (m) => m.ReportsDashboard,
-            ),
-        },
-        {
+          ).then((m) => m.MedicalRecordDetails),
+      },
+      {
         path: 'documents',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'EMPLOYEE'],
+          roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-            import('./features/documents/pages/documents-list/documents-list').then(
+          import('./features/documents/pages/documents-list/documents-list').then(
             (m) => m.DocumentsList,
-            ),
+          ),
+      },
+      {
+        path: 'reports',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'DIRECTOR'],
         },
-        {
+        loadComponent: () =>
+          import('./features/reports/pages/reports-dashboard/reports-dashboard').then(
+            (m) => m.ReportsDashboard,
+          ),
+      },
+      {
         path: 'audit',
         canActivate: [roleGuard],
         data: {
-            roles: ['ADMIN', 'DIRECTOR'],
+          roles: ['ADMIN', 'DIRECTOR'],
         },
         loadComponent: () =>
-            import('./features/audit/pages/audit-events-list/audit-events-list').then(
+          import('./features/audit/pages/audit-events-list/audit-events-list').then(
             (m) => m.AuditEventsList,
-            ),
-        },
-        
+          ),
+      },
       {
         path: '',
         pathMatch: 'full',
