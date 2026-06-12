@@ -37,6 +37,17 @@ export const routes: Routes = [
             (m) => m.PatientsList,
         ),
         },
+        {
+        path: 'patients/:id',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+            import('./features/patients/pages/patient-details/patient-details').then(
+            (m) => m.PatientDetails,
+            ),
+        },
       {
         path: '',
         pathMatch: 'full',

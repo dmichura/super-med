@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Patient } from '../../../../shared/models/patient.model';
 import { PatientsService } from '../../patients.service';
 
 @Component({
   selector: 'app-patients-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './patients-list.html',
   styleUrl: './patients-list.css',
 })

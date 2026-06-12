@@ -1,5 +1,17 @@
-.patients-page {
+.patient-details-page {
   color: var(--color-main);
+}
+
+.back-link {
+  display: inline-flex;
+  margin-bottom: 22px;
+  color: rgba(237, 239, 241, 0.82);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--color-accent);
 }
 
 .page-header {
@@ -31,7 +43,7 @@ h2 {
 }
 
 button {
-  min-width: 140px;
+  min-width: 170px;
   height: 42px;
   border: none;
   border-radius: var(--radius-md);
@@ -45,50 +57,60 @@ button:hover {
   filter: brightness(0.94);
 }
 
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.details-card,
 .state-card,
-.table-card {
+.info-box {
   border: 1px solid rgba(237, 239, 241, 0.18);
   border-radius: var(--radius-lg);
   background: rgba(237, 239, 241, 0.08);
 }
 
-.state-card {
+.details-card {
   padding: 22px;
 }
 
-.state-card.error {
+.card-label {
+  margin: 0 0 18px;
   color: var(--color-accent);
-}
-
-.table-card {
-  overflow: hidden;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 16px;
-  text-align: left;
-  border-bottom: 1px solid rgba(237, 239, 241, 0.12);
-}
-
-th {
-  color: rgba(237, 239, 241, 0.72);
-  font-size: 13px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
-td {
-  color: var(--color-main);
+dl {
+  display: grid;
+  gap: 16px;
+  margin: 0;
 }
 
-tbody tr:last-child td {
-  border-bottom: none;
+dl div {
+  display: grid;
+  gap: 4px;
+}
+
+dt {
+  color: rgba(237, 239, 241, 0.66);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+dd {
+  margin: 0;
+  color: var(--color-main);
+  font-weight: 700;
 }
 
 .badge {
@@ -112,38 +134,33 @@ tbody tr:last-child td {
   opacity: 0.58;
 }
 
+.state-card,
+.info-box {
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.state-card.error {
+  color: var(--color-accent);
+}
+
+.state-card.success {
+  color: var(--color-main);
+  background: rgba(237, 239, 241, 0.12);
+}
+
+.info-box {
+  margin-top: 18px;
+  color: rgba(237, 239, 241, 0.8);
+  line-height: 1.6;
+}
+
 @media (max-width: 960px) {
   .page-header {
     flex-direction: column;
   }
 
-  .table-card {
-    overflow-x: auto;
+  .details-grid {
+    grid-template-columns: 1fr;
   }
-
-  table {
-    min-width: 860px;
-  }
-}
-
-.details-link {
-  color: var(--color-main);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.details-link:hover {
-  color: var(--color-accent);
-  text-decoration: underline;
-}
-
-.details-link {
-  color: var(--color-main);
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.details-link:hover {
-  color: var(--color-accent);
-  text-decoration: underline;
 }
