@@ -2,7 +2,7 @@
 
 Frontend systemu SuperMED — Project MED-CORE.
 
-Aplikacja jest przygotowana jako panel webowy dla systemu Zarządzania Szpitalem (Hospital Management System).
+Aplikacja jest przygotowana jako panel webowy dla Systemu Zarządzania Szpitalem i Elektroniczną Dokumentacją Medyczną SuperMED.
 
 ## Technologie
 
