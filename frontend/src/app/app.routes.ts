@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 import { MainLayout } from './layout/main-layout/main-layout';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,17 @@ export const routes: Routes = [
             (m) => m.Dashboard,
           ),
       },
+      {
+        path: 'patients',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+            import('./features/patients/pages/patients-list/patients-list').then(
+            (m) => m.PatientsList,
+        ),
+        },
       {
         path: '',
         pathMatch: 'full',

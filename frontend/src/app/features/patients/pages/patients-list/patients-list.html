@@ -1,0 +1,62 @@
+<section class="patients-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Pacjenci</p>
+      <h2>Lista pacjentów</h2>
+      <p>
+        Widok testowy modułu pacjentów. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/patients</strong>.
+      </p>
+    </div>
+
+    <button type="button">Dodaj pacjenta</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie pacjentów...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Pacjent</th>
+            <th>PESEL</th>
+            <th>Email</th>
+            <th>Lekarz prowadzący</th>
+            <th>Autoryzacja</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (patient of patients; track patient.id) {
+            <tr>
+              <td>
+                <strong>{{ patient.firstName }} {{ patient.lastName }}</strong>
+              </td>
+              <td>{{ patient.pesel }}</td>
+              <td>{{ patient.email }}</td>
+              <td>{{ patient.assignedDoctorName || 'Nie przypisano' }}</td>
+              <td>
+                <span class="badge" [class.badge-warning]="!patient.isAuthorized">
+                  {{ patient.isAuthorized ? 'Zweryfikowany' : 'Oczekuje' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-muted]="!patient.isActive">
+                  {{ patient.isActive ? 'Aktywny' : 'Zarchiwizowany' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
