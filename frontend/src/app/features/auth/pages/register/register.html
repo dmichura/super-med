@@ -1,0 +1,101 @@
+<section class="register-page">
+  <div class="register-card">
+    <div class="register-header">
+      <p class="system-name">SuperMED</p>
+      <h1>Rejestracja pacjenta</h1>
+      <p class="subtitle">
+        Załóż konto w Portalu Pacjenta. Dostęp do dokumentacji medycznej zostanie
+        odblokowany dopiero po osobistej weryfikacji w placówce.
+      </p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="submit()" class="register-form">
+      <div class="form-row">
+        <div>
+          <label for="firstName">Imię</label>
+          <input id="firstName" type="text" formControlName="firstName" />
+
+          @if (registerForm.controls.firstName.touched && registerForm.controls.firstName.invalid) {
+            <p class="field-error">Imię jest wymagane.</p>
+          }
+        </div>
+
+        <div>
+          <label for="lastName">Nazwisko</label>
+          <input id="lastName" type="text" formControlName="lastName" />
+
+          @if (registerForm.controls.lastName.touched && registerForm.controls.lastName.invalid) {
+            <p class="field-error">Nazwisko jest wymagane.</p>
+          }
+        </div>
+      </div>
+
+      <label for="pesel">PESEL</label>
+      <input
+        id="pesel"
+        type="text"
+        formControlName="pesel"
+        maxlength="11"
+        placeholder="11 cyfr"
+      />
+
+      @if (registerForm.controls.pesel.touched && registerForm.controls.pesel.invalid) {
+        <p class="field-error">PESEL musi mieć dokładnie 11 cyfr.</p>
+      }
+
+      <label for="email">Adres e-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="np. pacjent@supermed.pl"
+        autocomplete="email"
+      />
+
+      @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+        <p class="field-error">Podaj poprawny adres e-mail.</p>
+      }
+
+      <label for="password">Hasło</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+      />
+
+      @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+        <p class="field-error">Hasło musi mieć minimum 8 znaków.</p>
+      }
+
+      <label for="confirmPassword">Powtórz hasło</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        formControlName="confirmPassword"
+        autocomplete="new-password"
+      />
+
+      @if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.invalid) {
+        <p class="field-error">Powtórzenie hasła jest wymagane.</p>
+      }
+
+      @if (errorMessage) {
+        <p class="form-error">{{ errorMessage }}</p>
+      }
+
+      @if (successMessage) {
+        <p class="form-success">{{ successMessage }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Tworzenie konta...' : 'Zarejestruj konto pacjenta' }}
+      </button>
+    </form>
+
+    <p class="login-link">
+      Masz już konto?
+      <a routerLink="/login">Wróć do logowania</a>
+    </p>
+  </div>
+</section>

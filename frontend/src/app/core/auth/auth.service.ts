@@ -3,6 +3,14 @@ import { Router } from '@angular/router';
 
 const ACCESS_TOKEN_KEY = 'supermed_access_token';
 
+export interface PatientRegisterMockPayload {
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,6 +38,23 @@ export class AuthService {
     // Później zastąpimy to żądaniem POST /api/v1/auth/login.
     this.setAccessToken('mock-supermed-access-token');
 
+    return true;
+  }
+
+  registerPatientMock(payload: PatientRegisterMockPayload): boolean {
+    if (
+      !payload.firstName ||
+      !payload.lastName ||
+      !payload.pesel ||
+      !payload.email ||
+      !payload.password
+    ) {
+      return false;
+    }
+
+    // Tymczasowa rejestracja pacjenta.
+    // Docelowo wyślemy dane do POST /api/v1/patient-portal/register.
+    // Konto pacjenta po rejestracji będzie miało isAuthorized = false.
     return true;
   }
 
