@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   MedicalRecord,
   MedicalRecordStatus,
@@ -8,7 +9,7 @@ import { MedicalRecordsService } from '../../medical-records.service';
 
 @Component({
   selector: 'app-medical-records-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './medical-records-list.html',
   styleUrl: './medical-records-list.css',
 })

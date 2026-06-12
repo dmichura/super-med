@@ -7,6 +7,16 @@ export type MedicalRecordType =
 
 export type MedicalRecordStatus = 'DRAFT' | 'FINAL' | 'ARCHIVED';
 
+export type MedicalRecordAuditAction = 'VIEW' | 'CREATE' | 'UPDATE' | 'EXPORT';
+
+export interface MedicalRecordAuditEntry {
+  id: number;
+  actorName: string;
+  action: MedicalRecordAuditAction;
+  accessedAt: string;
+  reason: string;
+}
+
 export interface MedicalRecord {
   id: number;
   patientName: string;
@@ -18,4 +28,6 @@ export interface MedicalRecord {
   createdAt: string;
   status: MedicalRecordStatus;
   isSensitive: boolean;
+  description: string;
+  auditTrail: MedicalRecordAuditEntry[];
 }

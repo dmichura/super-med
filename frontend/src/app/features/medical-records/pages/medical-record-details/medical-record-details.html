@@ -1,0 +1,115 @@
+<section class="medical-record-details-page">
+  <a class="back-link" routerLink="/medical-records">
+    ← Wróć do dokumentacji medycznej
+  </a>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie wpisu dokumentacji medycznej...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && medicalRecord) {
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Dokumentacja medyczna</p>
+        <h2>{{ medicalRecord.title }}</h2>
+        <p>
+          Szczegóły wpisu medycznego oraz podstawowy audyt dostępu do danych wrażliwych.
+        </p>
+      </div>
+
+      <span class="badge sensitive-badge">
+        {{ medicalRecord.isSensitive ? 'Dane wrażliwe' : 'Dane standardowe' }}
+      </span>
+    </div>
+
+    <div class="details-grid">
+      <article class="details-card">
+        <p class="card-label">Dane pacjenta</p>
+
+        <dl>
+          <div>
+            <dt>Pacjent</dt>
+            <dd>{{ medicalRecord.patientName }}</dd>
+          </div>
+
+          <div>
+            <dt>PESEL</dt>
+            <dd>{{ medicalRecord.patientPesel }}</dd>
+          </div>
+
+          <div>
+            <dt>Oddział</dt>
+            <dd>{{ medicalRecord.departmentName }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="details-card">
+        <p class="card-label">Dane wpisu</p>
+
+        <dl>
+          <div>
+            <dt>Lekarz</dt>
+            <dd>{{ medicalRecord.doctorName }}</dd>
+          </div>
+
+          <div>
+            <dt>Typ</dt>
+            <dd>{{ getTypeLabel(medicalRecord.type) }}</dd>
+          </div>
+
+          <div>
+            <dt>Status</dt>
+            <dd>
+              <span class="badge" [class.badge-muted]="medicalRecord.status === 'ARCHIVED'">
+                {{ getStatusLabel(medicalRecord.status) }}
+              </span>
+            </dd>
+          </div>
+
+          <div>
+            <dt>Data utworzenia</dt>
+            <dd>{{ medicalRecord.createdAt }}</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+
+    <article class="description-card">
+      <p class="card-label">Opis medyczny</p>
+      <p>{{ medicalRecord.description }}</p>
+    </article>
+
+    <article class="audit-card">
+      <p class="card-label">Audyt dostępu</p>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Użytkownik</th>
+              <th>Akcja</th>
+              <th>Data i godzina</th>
+              <th>Powód</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (entry of medicalRecord.auditTrail; track entry.id) {
+              <tr>
+                <td>{{ entry.actorName }}</td>
+                <td>{{ getAuditActionLabel(entry.action) }}</td>
+                <td>{{ entry.accessedAt }}</td>
+                <td>{{ entry.reason }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  }
+</section>

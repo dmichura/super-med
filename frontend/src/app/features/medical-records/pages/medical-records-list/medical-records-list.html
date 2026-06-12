@@ -34,6 +34,7 @@
             <th>Data</th>
             <th>Status</th>
             <th>Wrażliwe</th>
+            <th>Akcje</th>
           </tr>
         </thead>
 
@@ -58,6 +59,11 @@
                 <span class="badge sensitive-badge">
                   {{ record.isSensitive ? 'Tak' : 'Nie' }}
                 </span>
+              </td>
+              <td>
+                <a class="details-link" [routerLink]="['/medical-records', record.id]">
+                  Szczegóły
+                </a>
               </td>
             </tr>
           }

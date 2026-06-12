@@ -92,6 +92,17 @@ export const routes: Routes = [
             './features/medical-records/pages/medical-records-list/medical-records-list'
             ).then((m) => m.MedicalRecordsList),
         },
+        {
+        path: 'medical-records/:id',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+            import(
+            './features/medical-records/pages/medical-record-details/medical-record-details'
+            ).then((m) => m.MedicalRecordDetails),
+        },
         
       {
         path: '',
