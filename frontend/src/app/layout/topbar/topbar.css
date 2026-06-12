@@ -1,0 +1,39 @@
+.topbar {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: var(--color-main);
+  border-bottom: 1px solid rgba(0, 46, 70, 0.12);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 0;
+  color: var(--color-background);
+  font-size: 24px;
+}
+
+button {
+  min-width: 112px;
+  height: 42px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-main);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(0.94);
+}
