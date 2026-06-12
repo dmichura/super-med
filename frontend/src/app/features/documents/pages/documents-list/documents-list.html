@@ -1,0 +1,66 @@
+<section class="documents-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Dokumenty</p>
+      <h2>Pliki pacjentów</h2>
+      <p>
+        Widok testowy dokumentów medycznych i administracyjnych. Docelowo dane będą
+        pobierane z endpointu <strong>GET /api/v1/documents</strong>.
+      </p>
+    </div>
+
+    <button type="button">Dodaj dokument</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie dokumentów...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Pacjent</th>
+            <th>PESEL</th>
+            <th>Typ</th>
+            <th>Nazwa pliku</th>
+            <th>Status</th>
+            <th>Wrażliwe</th>
+            <th>Dodał</th>
+            <th>Data dodania</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (document of documents; track document.id) {
+            <tr>
+              <td>
+                <strong>{{ document.patientName }}</strong>
+              </td>
+              <td>{{ document.patientPesel }}</td>
+              <td>{{ getTypeLabel(document.type) }}</td>
+              <td>{{ document.fileName }}</td>
+              <td>
+                <span class="badge" [class.badge-muted]="document.status === 'ARCHIVED'">
+                  {{ getStatusLabel(document.status) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge sensitive-badge">
+                  {{ document.isSensitive ? 'Tak' : 'Nie' }}
+                </span>
+              </td>
+              <td>{{ document.uploadedBy }}</td>
+              <td>{{ document.uploadedAt }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

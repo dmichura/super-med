@@ -115,6 +115,17 @@ export const routes: Routes = [
             ),
         },
         {
+        path: 'documents',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+            import('./features/documents/pages/documents-list/documents-list').then(
+            (m) => m.DocumentsList,
+            ),
+        },
+        {
         path: 'audit',
         canActivate: [roleGuard],
         data: {
