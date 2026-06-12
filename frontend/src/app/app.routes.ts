@@ -48,6 +48,17 @@ export const routes: Routes = [
             (m) => m.PatientDetails,
             ),
         },
+        {
+        path: 'hospital-structure',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'DIRECTOR', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+            import(
+            './features/hospital-structure/pages/hospital-structure-list/hospital-structure-list'
+            ).then((m) => m.HospitalStructureList),
+        },
       {
         path: '',
         pathMatch: 'full',

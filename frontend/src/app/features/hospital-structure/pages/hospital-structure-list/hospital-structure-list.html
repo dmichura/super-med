@@ -1,0 +1,76 @@
+<section class="hospital-structure-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Struktura szpitala</p>
+      <h2>Oddziały, sale i łóżka</h2>
+      <p>
+        Widok testowy struktury placówki. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/hospital-structure/departments</strong>.
+      </p>
+    </div>
+
+    <button type="button">Dodaj oddział</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie struktury szpitala...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="departments-grid">
+      @for (department of departments; track department.id) {
+        <article class="department-card">
+          <div class="department-header">
+            <div>
+              <p class="department-code">{{ department.code }}</p>
+              <h3>{{ department.name }}</h3>
+              <p class="department-meta">
+                Piętro {{ department.floor }} · Kierownik: {{ department.headDoctorName }}
+              </p>
+            </div>
+
+            <div class="beds-summary">
+              <strong>{{ getFreeBedsCount(department) }}</strong>
+              <span>wolne z {{ getBedsCount(department) }}</span>
+            </div>
+          </div>
+
+          <div class="rooms-list">
+            @for (room of department.rooms; track room.id) {
+              <div class="room-card">
+                <div class="room-header">
+                  <strong>Sala {{ room.number }}</strong>
+                  <span>{{ room.type }}</span>
+                </div>
+
+                <div class="beds-list">
+                  @for (bed of room.beds; track bed.id) {
+                    <div class="bed-row">
+                      <div>
+                        <strong>Łóżko {{ bed.number }}</strong>
+
+                        @if (bed.patientName) {
+                          <p>{{ bed.patientName }}</p>
+                        } @else {
+                          <p>Brak pacjenta</p>
+                        }
+                      </div>
+
+                      <span class="badge" [class]="'status-' + bed.status.toLowerCase()">
+                        {{ getStatusLabel(bed.status) }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
