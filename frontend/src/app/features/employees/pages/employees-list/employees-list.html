@@ -1,0 +1,64 @@
+<section class="employees-page">
+  <div class="page-header">
+    <div>
+      <p class="eyebrow">Pracownicy</p>
+      <h2>Lista pracowników</h2>
+      <p>
+        Widok testowy modułu pracowników. Docelowo dane będą pobierane z endpointu
+        <strong>GET /api/v1/employees</strong>.
+      </p>
+    </div>
+
+    <button type="button">Dodaj pracownika</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie pracowników...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && !errorMessage) {
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Pracownik</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>Rola systemowa</th>
+            <th>Funkcja</th>
+            <th>Oddział</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (employee of employees; track employee.id) {
+            <tr>
+              <td>
+                <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
+              </td>
+              <td>{{ employee.email }}</td>
+              <td>{{ employee.phoneNumber }}</td>
+              <td>
+                <span class="badge role-badge">
+                  {{ getSystemRoleLabel(employee.systemRole) }}
+                </span>
+              </td>
+              <td>{{ getFunctionLabel(employee.employeeFunction) }}</td>
+              <td>{{ employee.departmentName || 'Nie przypisano' }}</td>
+              <td>
+                <span class="badge" [class.badge-muted]="!employee.isActive">
+                  {{ employee.isActive ? 'Aktywny' : 'Nieaktywny' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

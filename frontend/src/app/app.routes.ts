@@ -49,6 +49,17 @@ export const routes: Routes = [
             ),
         },
         {
+        path: 'employees',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+            import('./features/employees/pages/employees-list/employees-list').then(
+            (m) => m.EmployeesList,
+            ),
+        },
+        {
         path: 'hospital-structure',
         canActivate: [roleGuard],
         data: {
@@ -59,6 +70,7 @@ export const routes: Routes = [
             './features/hospital-structure/pages/hospital-structure-list/hospital-structure-list'
             ).then((m) => m.HospitalStructureList),
         },
+        
       {
         path: '',
         pathMatch: 'full',
