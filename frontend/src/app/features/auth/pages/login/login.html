@@ -1,1 +1,45 @@
-<p>login works!</p>
+<section class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <p class="system-name">SuperMED</p>
+      <h1>Logowanie</h1>
+      <p class="subtitle">System Zarządzania Danymi Krytycznymi i Telemetrią Medyczną</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" class="login-form">
+      <label for="email">Adres e-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="np. lekarz@supermed.pl"
+        autocomplete="email"
+      />
+
+      @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+        <p class="field-error">Podaj poprawny adres e-mail.</p>
+      }
+
+      <label for="password">Hasło</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Wpisz hasło"
+        autocomplete="current-password"
+      />
+
+      @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+        <p class="field-error">Hasło jest wymagane.</p>
+      }
+
+      @if (errorMessage) {
+        <p class="form-error">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Logowanie...' : 'Zaloguj się' }}
+      </button>
+    </form>
+  </div>
+</section>

@@ -21,6 +21,18 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
+  loginMock(email: string, password: string): boolean {
+    if (!email || !password) {
+      return false;
+    }
+
+    // Tymczasowy token testowy do sprawdzenia działania frontendu.
+    // Później zastąpimy to żądaniem POST /api/v1/auth/login.
+    this.setAccessToken('mock-supermed-access-token');
+
+    return true;
+  }
+
   logout(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     this.router.navigate(['/login']);

@@ -1,3 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-background: #002e46;
+  --color-main: #edeff1;
+  --color-accent: #ba4643;
+  --color-text-dark: #002e46;
+  --color-text-light: #edeff1;
+  --color-border: rgba(237, 239, 241, 0.28);
+  --color-card: rgba(237, 239, 241, 0.96);
+  --color-error: #ba4643;
 
-@import 'tailwindcss';
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-card: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-text-dark);
+}
+
+button,
+input {
+  font: inherit;
+}
