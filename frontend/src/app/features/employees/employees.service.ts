@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Employee } from '../../shared/models/employee.model';
 
 @Injectable({
@@ -67,5 +67,29 @@ export class EmployeesService {
   getEmployees(): Observable<Employee[]> {
     // Docelowo: GET /api/v1/employees
     return of([...this.employees]);
+  }
+
+  getEmployeeById(employeeId: number): Observable<Employee> {
+    const employee = this.employees.find((item) => item.id === employeeId);
+
+    if (!employee) {
+      return throwError(() => new Error('Employee not found'));
+    }
+
+    // Docelowo: GET /api/v1/employees/:id
+    return of({ ...employee });
+  }
+
+  toggleEmployeeStatus(employeeId: number): Observable<Employee> {
+    const employee = this.employees.find((item) => item.id === employeeId);
+
+    if (!employee) {
+      return throwError(() => new Error('Employee not found'));
+    }
+
+    employee.isActive = !employee.isActive;
+
+    // Docelowo: PATCH /api/v1/employees/:id/status
+    return of({ ...employee });
   }
 }

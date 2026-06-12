@@ -60,6 +60,17 @@ export const routes: Routes = [
             ),
         },
         {
+        path: 'employees/:id',
+        canActivate: [roleGuard],
+        data: {
+            roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+            import('./features/employees/pages/employee-details/employee-details').then(
+            (m) => m.EmployeeDetails,
+            ),
+        },
+        {
         path: 'hospital-structure',
         canActivate: [roleGuard],
         data: {

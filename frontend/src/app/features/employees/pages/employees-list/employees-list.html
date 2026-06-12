@@ -32,6 +32,7 @@
             <th>Funkcja</th>
             <th>Oddział</th>
             <th>Status</th>
+            <th>Akcje</th>
           </tr>
         </thead>
 
@@ -54,6 +55,11 @@
                 <span class="badge" [class.badge-muted]="!employee.isActive">
                   {{ employee.isActive ? 'Aktywny' : 'Nieaktywny' }}
                 </span>
+              </td>
+              <td>
+                <a class="details-link" [routerLink]="['/employees', employee.id]">
+                  Szczegóły
+                </a>
               </td>
             </tr>
           }

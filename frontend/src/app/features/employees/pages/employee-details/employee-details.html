@@ -1,0 +1,92 @@
+<section class="employee-details-page">
+  <a class="back-link" routerLink="/employees">← Wróć do listy pracowników</a>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie danych pracownika...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (successMessage) {
+    <div class="state-card success">{{ successMessage }}</div>
+  }
+
+  @if (!isLoading && employee) {
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Pracownik</p>
+        <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
+        <p>
+          Szczegóły profilu pracownika, rola systemowa i przypisanie organizacyjne.
+        </p>
+      </div>
+
+      <button type="button" [disabled]="isChangingStatus" (click)="toggleStatus()">
+        @if (isChangingStatus) {
+          Zmienianie...
+        } @else {
+          {{ employee.isActive ? 'Dezaktywuj' : 'Aktywuj' }}
+        }
+      </button>
+    </div>
+
+    <div class="details-grid">
+      <article class="details-card">
+        <p class="card-label">Dane kontaktowe</p>
+
+        <dl>
+          <div>
+            <dt>Imię i nazwisko</dt>
+            <dd>{{ employee.firstName }} {{ employee.lastName }}</dd>
+          </div>
+
+          <div>
+            <dt>Email</dt>
+            <dd>{{ employee.email }}</dd>
+          </div>
+
+          <div>
+            <dt>Telefon</dt>
+            <dd>{{ employee.phoneNumber }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="details-card">
+        <p class="card-label">Uprawnienia i organizacja</p>
+
+        <dl>
+          <div>
+            <dt>Rola systemowa</dt>
+            <dd>
+              <span class="badge role-badge">
+                {{ getSystemRoleLabel(employee.systemRole) }}
+              </span>
+            </dd>
+          </div>
+
+          <div>
+            <dt>Funkcja</dt>
+            <dd>{{ getFunctionLabel(employee.employeeFunction) }}</dd>
+          </div>
+
+          <div>
+            <dt>Oddział</dt>
+            <dd>{{ employee.departmentName || 'Nie przypisano' }}</dd>
+          </div>
+
+          <div>
+            <dt>Status</dt>
+            <dd>
+              <span class="badge" [class.badge-muted]="!employee.isActive">
+                {{ employee.isActive ? 'Aktywny' : 'Nieaktywny' }}
+              </span>
+            </dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  }
+</section>

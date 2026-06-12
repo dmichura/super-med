@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   Employee,
   EmployeeFunction,
@@ -8,7 +9,7 @@ import { EmployeesService } from '../../employees.service';
 
 @Component({
   selector: 'app-employees-list',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './employees-list.html',
   styleUrl: './employees-list.css',
 })
