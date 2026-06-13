@@ -1,5 +1,5 @@
 import { DocumentStatus, DocumentType } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -9,6 +9,22 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+
+function transformBoolean(value: unknown): boolean | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+
+  if (value === true || value === 'true') {
+    return true;
+  }
+
+  if (value === false || value === 'false') {
+    return false;
+  }
+
+  return undefined;
+}
 
 export class UpdateDocumentDto {
   @IsOptional()
@@ -31,6 +47,7 @@ export class UpdateDocumentDto {
   status?: DocumentStatus;
 
   @IsOptional()
+  @Transform(({ value }) => transformBoolean(value))
   @IsBoolean()
   isSensitive?: boolean;
 }

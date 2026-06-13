@@ -40,6 +40,9 @@ export class DocumentsList implements OnInit {
   statusFilter: StatusFilter = 'ALL';
   sensitiveFilter: SensitiveFilter = 'ALL';
 
+  selectedFile: File | null = null;
+  downloadingDocumentId: number | null = null;
+
   isLoading = true;
   isSaving = false;
   isFormVisible = false;
@@ -136,6 +139,7 @@ export class DocumentsList implements OnInit {
   showCreateForm(): void {
     this.isFormVisible = true;
     this.editingDocumentId = null;
+    this.selectedFile = null;
     this.form = this.getEmptyForm();
     this.successMessage = '';
     this.errorMessage = '';
@@ -144,6 +148,7 @@ export class DocumentsList implements OnInit {
   editDocument(document: PatientDocument): void {
     this.isFormVisible = true;
     this.editingDocumentId = document.id;
+    this.selectedFile = null;
     this.successMessage = '';
     this.errorMessage = '';
 
@@ -159,12 +164,31 @@ export class DocumentsList implements OnInit {
   cancelForm(): void {
     this.isFormVisible = false;
     this.editingDocumentId = null;
+    this.selectedFile = null;
     this.form = this.getEmptyForm();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+
+    this.selectedFile = file;
+
+    if (file) {
+      this.form.fileName = file.name;
+    }
   }
 
   saveDocument(): void {
     if (!this.form.patientId) {
       this.errorMessage = 'Wybierz pacjenta.';
+      return;
+    }
+
+    const selectedFile = this.selectedFile;
+
+    if (!this.editingDocumentId && !selectedFile) {
+      this.errorMessage = 'Wybierz plik do wgrania.';
       return;
     }
 
@@ -181,22 +205,24 @@ export class DocumentsList implements OnInit {
         isSensitive: this.form.isSensitive,
       };
 
-      this.documentsService.updateDocument(this.editingDocumentId, payload).subscribe({
-        next: (updatedDocument) => {
-          this.documents = this.documents.map((document) =>
-            document.id === updatedDocument.id ? updatedDocument : document,
-          );
-          this.successMessage = 'Dokument został zaktualizowany.';
-          this.isSaving = false;
-          this.cancelForm();
-          this.changeDetectorRef.detectChanges();
-        },
-        error: () => {
-          this.errorMessage = 'Nie udało się zapisać zmian dokumentu. Sprawdź dane formularza.';
-          this.isSaving = false;
-          this.changeDetectorRef.detectChanges();
-        },
-      });
+      this.documentsService
+        .updateDocumentWithOptionalFile(this.editingDocumentId, payload, selectedFile)
+        .subscribe({
+          next: (updatedDocument) => {
+            this.documents = this.documents.map((document) =>
+              document.id === updatedDocument.id ? updatedDocument : document,
+            );
+            this.successMessage = 'Dokument został zaktualizowany.';
+            this.isSaving = false;
+            this.cancelForm();
+            this.changeDetectorRef.detectChanges();
+          },
+          error: () => {
+            this.errorMessage = 'Nie udało się zapisać zmian dokumentu. Sprawdź dane formularza.';
+            this.isSaving = false;
+            this.changeDetectorRef.detectChanges();
+          },
+        });
 
       return;
     }
@@ -209,17 +235,53 @@ export class DocumentsList implements OnInit {
       isSensitive: this.form.isSensitive,
     };
 
-    this.documentsService.createDocument(payload).subscribe({
+    const fileToUpload = selectedFile;
+
+    if (!fileToUpload) {
+      this.errorMessage = 'Wybierz plik do wgrania.';
+      this.isSaving = false;
+      return;
+    }
+
+    this.documentsService.createDocumentWithFile(payload, fileToUpload).subscribe({
       next: (createdDocument) => {
         this.documents = [createdDocument, ...this.documents];
-        this.successMessage = 'Dokument został dodany.';
+        this.successMessage = 'Dokument został wgrany.';
         this.isSaving = false;
         this.cancelForm();
         this.changeDetectorRef.detectChanges();
       },
       error: () => {
-        this.errorMessage = 'Nie udało się dodać dokumentu. Sprawdź dane formularza.';
+        this.errorMessage =
+          'Nie udało się wgrać dokumentu. Sprawdź dane formularza i rozmiar pliku.';
         this.isSaving = false;
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  downloadDocument(document: PatientDocument): void {
+    this.downloadingDocumentId = document.id;
+    this.errorMessage = '';
+
+    this.documentsService.downloadDocument(document.id).subscribe({
+      next: (blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const link = window.document.createElement('a');
+
+        link.href = objectUrl;
+        link.download = document.fileName;
+        link.click();
+
+        URL.revokeObjectURL(objectUrl);
+
+        this.downloadingDocumentId = null;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: () => {
+        this.errorMessage =
+          'Nie udało się pobrać pliku. Ten dokument może mieć tylko metadane, bez fizycznego pliku.';
+        this.downloadingDocumentId = null;
         this.changeDetectorRef.detectChanges();
       },
     });

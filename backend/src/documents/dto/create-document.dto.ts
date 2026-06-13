@@ -1,5 +1,5 @@
 import { DocumentStatus, DocumentType } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -10,24 +10,41 @@ import {
   MinLength,
 } from 'class-validator';
 
+function transformBoolean(value: unknown): boolean | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+
+  if (value === true || value === 'true') {
+    return true;
+  }
+
+  if (value === false || value === 'false') {
+    return false;
+  }
+
+  return undefined;
+}
+
 export class CreateDocumentDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  patientId: number;
+  patientId!: number;
 
   @IsEnum(DocumentType)
-  type: DocumentType;
+  type!: DocumentType;
 
   @IsString()
   @MinLength(3)
-  fileName: string;
+  fileName!: string;
 
   @IsOptional()
   @IsEnum(DocumentStatus)
   status?: DocumentStatus;
 
   @IsOptional()
+  @Transform(({ value }) => transformBoolean(value))
   @IsBoolean()
   isSensitive?: boolean;
 }

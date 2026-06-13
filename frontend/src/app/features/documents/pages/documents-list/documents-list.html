@@ -4,8 +4,8 @@
       <p class="eyebrow">Dokumenty</p>
       <h2>Pliki pacjentów</h2>
       <p>
-        Zarządzanie dokumentami pacjentów: metadane plików, status weryfikacji, typ dokumentu i
-        oznaczenie danych wrażliwych.
+        Zarządzanie dokumentami pacjentów: wgrywanie plików, pobieranie, metadane, status
+        weryfikacji, typ dokumentu i oznaczenie danych wrażliwych.
       </p>
     </div>
 
@@ -69,8 +69,13 @@
             [(ngModel)]="form.fileName"
             required
             minlength="3"
-            placeholder="np. wynik-morfologia.pdf"
+            placeholder="Nazwa zostanie uzupełniona po wybraniu pliku"
           />
+        </label>
+
+        <label class="full-width">
+          {{ editingDocumentId ? 'Nowy plik (opcjonalnie)' : 'Plik' }}
+          <input type="file" (change)="onFileSelected($event)" />
         </label>
 
         <label class="checkbox-row full-width">
@@ -161,7 +166,7 @@
               </td>
               <td>{{ document.patientPesel }}</td>
               <td>{{ getTypeLabel(document.type) }}</td>
-              <td>{{ document.fileName }}</td>
+              <td class="file-name-cell">{{ document.fileName }}</td>
               <td>
                 <span class="badge" [class.badge-muted]="document.status === 'ARCHIVED'">
                   {{ getStatusLabel(document.status) }}
@@ -176,6 +181,15 @@
               <td>{{ document.uploadedAt }}</td>
               <td>
                 <div class="row-actions">
+                  <button
+                    type="button"
+                    class="link-button"
+                    [disabled]="downloadingDocumentId === document.id"
+                    (click)="downloadDocument(document)"
+                  >
+                    {{ downloadingDocumentId === document.id ? 'Pobieranie...' : 'Pobierz' }}
+                  </button>
+
                   <button type="button" class="link-button" (click)="editDocument(document)">
                     Edytuj
                   </button>
