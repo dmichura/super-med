@@ -29,6 +29,13 @@ enum EmployeeFunction {
   IT_ADMIN
 }
 
+enum BedStatus {
+  FREE
+  OCCUPIED
+  BLOCKED
+  CLEANING
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
@@ -79,4 +86,48 @@ model Employee {
   user User? @relation(fields: [userId], references: [id])
 
   @@map("employees")
+}
+
+model HospitalDepartment {
+  id             Int      @id @default(autoincrement())
+  name           String
+  code           String   @unique
+  floor          Int
+  headDoctorName String   @map("head_doctor_name")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  rooms HospitalRoom[]
+
+  @@map("hospital_departments")
+}
+
+model HospitalRoom {
+  id           Int      @id @default(autoincrement())
+  departmentId Int      @map("department_id")
+  number       String
+  type         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  department HospitalDepartment @relation(fields: [departmentId], references: [id])
+  beds       HospitalBed[]
+
+  @@unique([departmentId, number])
+  @@map("hospital_rooms")
+}
+
+model HospitalBed {
+  id          Int       @id @default(autoincrement())
+  roomId      Int       @map("room_id")
+  number      String
+  status      BedStatus @default(FREE)
+  patientName String?   @map("patient_name")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  room HospitalRoom @relation(fields: [roomId], references: [id])
+
+  @@unique([roomId, number])
+  @@map("hospital_beds")
 }

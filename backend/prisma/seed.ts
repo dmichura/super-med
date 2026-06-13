@@ -263,10 +263,145 @@ async function seedEmployees() {
   }
 }
 
+async function seedHospitalStructure() {
+  const departments = [
+    {
+      name: 'Oddział Kardiologii',
+      code: 'CARD',
+      floor: 2,
+      headDoctorName: 'dr Anna Nowak',
+      rooms: [
+        {
+          number: '201',
+          type: 'Sala dwuosobowa',
+          beds: [
+            {
+              number: '201-A',
+              status: 'OCCUPIED' as const,
+              patientName: 'Jan Kowalski',
+            },
+            {
+              number: '201-B',
+              status: 'FREE' as const,
+              patientName: null,
+            },
+          ],
+        },
+        {
+          number: '202',
+          type: 'Sala jednoosobowa',
+          beds: [
+            {
+              number: '202-A',
+              status: 'CLEANING' as const,
+              patientName: null,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Oddział Neurologii',
+      code: 'NEURO',
+      floor: 3,
+      headDoctorName: 'dr Piotr Zieliński',
+      rooms: [
+        {
+          number: '301',
+          type: 'Sala trzyosobowa',
+          beds: [
+            {
+              number: '301-A',
+              status: 'FREE' as const,
+              patientName: null,
+            },
+            {
+              number: '301-B',
+              status: 'BLOCKED' as const,
+              patientName: null,
+            },
+            {
+              number: '301-C',
+              status: 'OCCUPIED' as const,
+              patientName: 'Maria Wiśniewska',
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  for (const departmentData of departments) {
+    const department = await prisma.hospitalDepartment.upsert({
+      where: {
+        code: departmentData.code,
+      },
+      update: {
+        name: departmentData.name,
+        floor: departmentData.floor,
+        headDoctorName: departmentData.headDoctorName,
+      },
+      create: {
+        name: departmentData.name,
+        code: departmentData.code,
+        floor: departmentData.floor,
+        headDoctorName: departmentData.headDoctorName,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    for (const roomData of departmentData.rooms) {
+      const room = await prisma.hospitalRoom.upsert({
+        where: {
+          departmentId_number: {
+            departmentId: department.id,
+            number: roomData.number,
+          },
+        },
+        update: {
+          type: roomData.type,
+        },
+        create: {
+          departmentId: department.id,
+          number: roomData.number,
+          type: roomData.type,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const bedData of roomData.beds) {
+        await prisma.hospitalBed.upsert({
+          where: {
+            roomId_number: {
+              roomId: room.id,
+              number: bedData.number,
+            },
+          },
+          update: {
+            status: bedData.status,
+            patientName: bedData.patientName,
+          },
+          create: {
+            roomId: room.id,
+            number: bedData.number,
+            status: bedData.status,
+            patientName: bedData.patientName,
+          },
+        });
+      }
+    }
+  }
+}
+
 async function main() {
   await seedStaffUsers();
   await seedPatients();
   await seedEmployees();
+  await seedHospitalStructure();
 
   console.log('Seed zakończony.');
   console.log('');
