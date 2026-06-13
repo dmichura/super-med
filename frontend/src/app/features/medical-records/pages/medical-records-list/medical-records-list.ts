@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   MedicalRecord,
@@ -15,6 +15,7 @@ import { MedicalRecordsService } from '../../medical-records.service';
 })
 export class MedicalRecordsList implements OnInit {
   private readonly medicalRecordsService = inject(MedicalRecordsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   medicalRecords: MedicalRecord[] = [];
   isLoading = true;
@@ -32,10 +33,12 @@ export class MedicalRecordsList implements OnInit {
       next: (medicalRecords) => {
         this.medicalRecords = medicalRecords;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać dokumentacji medycznej.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }

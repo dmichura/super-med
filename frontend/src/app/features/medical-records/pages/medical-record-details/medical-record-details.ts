@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   MedicalRecord,
@@ -17,6 +17,7 @@ import { MedicalRecordsService } from '../../medical-records.service';
 export class MedicalRecordDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly medicalRecordsService = inject(MedicalRecordsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   medicalRecord: MedicalRecord | null = null;
   isLoading = true;
@@ -32,6 +33,7 @@ export class MedicalRecordDetails implements OnInit {
     if (!recordId) {
       this.errorMessage = 'Nieprawidłowy identyfikator wpisu medycznego.';
       this.isLoading = false;
+      this.changeDetectorRef.detectChanges();
       return;
     }
 
@@ -42,10 +44,12 @@ export class MedicalRecordDetails implements OnInit {
       next: (medicalRecord) => {
         this.medicalRecord = medicalRecord;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie odnaleziono wpisu dokumentacji medycznej.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
