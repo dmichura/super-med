@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   Employee,
@@ -16,6 +16,7 @@ import { EmployeesService } from '../../employees.service';
 export class EmployeeDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly employeesService = inject(EmployeesService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   employee: Employee | null = null;
   isLoading = true;
@@ -33,6 +34,7 @@ export class EmployeeDetails implements OnInit {
     if (!employeeId) {
       this.errorMessage = 'Nieprawidłowy identyfikator pracownika.';
       this.isLoading = false;
+      this.changeDetectorRef.detectChanges();
       return;
     }
 
@@ -43,10 +45,12 @@ export class EmployeeDetails implements OnInit {
       next: (employee) => {
         this.employee = employee;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie odnaleziono pracownika.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
@@ -67,10 +71,12 @@ export class EmployeeDetails implements OnInit {
           ? 'Pracownik został aktywowany.'
           : 'Pracownik został dezaktywowany.';
         this.isChangingStatus = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się zmienić statusu pracownika.';
         this.isChangingStatus = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }

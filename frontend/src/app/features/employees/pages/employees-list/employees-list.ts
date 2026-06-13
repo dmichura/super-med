@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   Employee,
@@ -15,6 +15,7 @@ import { EmployeesService } from '../../employees.service';
 })
 export class EmployeesList implements OnInit {
   private readonly employeesService = inject(EmployeesService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   employees: Employee[] = [];
   isLoading = true;
@@ -32,10 +33,12 @@ export class EmployeesList implements OnInit {
       next: (employees) => {
         this.employees = employees;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać listy pracowników.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
