@@ -30,5 +30,25 @@ model User {
   updatedAt    DateTime   @updatedAt @map("updated_at")
   lastLoginAt  DateTime?  @map("last_login_at")
 
+  patient Patient?
+
   @@map("users")
+}
+
+model Patient {
+  id                 Int      @id @default(autoincrement())
+  userId             String?  @unique @map("user_id")
+  firstName          String   @map("first_name")
+  lastName           String   @map("last_name")
+  pesel              String   @unique
+  email              String   @unique
+  isAuthorized       Boolean  @default(false) @map("is_authorized")
+  assignedDoctorName String?  @map("assigned_doctor_name")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("patients")
 }
