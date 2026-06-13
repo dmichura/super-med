@@ -1,8 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import {
-  BedStatus,
-  HospitalDepartment,
-} from '../../../../shared/models/hospital-structure.model';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { BedStatus, HospitalDepartment } from '../../../../shared/models/hospital-structure.model';
 import { HospitalStructureService } from '../../hospital-structure.service';
 
 @Component({
@@ -13,6 +10,7 @@ import { HospitalStructureService } from '../../hospital-structure.service';
 })
 export class HospitalStructureList implements OnInit {
   private readonly hospitalStructureService = inject(HospitalStructureService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   departments: HospitalDepartment[] = [];
   isLoading = true;
@@ -30,10 +28,12 @@ export class HospitalStructureList implements OnInit {
       next: (departments) => {
         this.departments = departments;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać struktury szpitala.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
