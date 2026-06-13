@@ -43,3 +43,10 @@ export interface UpdateEmployeePayload {
   password?: string;
   isActive?: boolean;
 }
+
+export interface DepartmentOption {
+  id: number;
+  name: string;
+  code: string;
+  floor: number;
+}

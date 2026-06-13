@@ -15,7 +15,8 @@
         <p class="eyebrow">Pracownicy</p>
         <h2>{{ isEditMode ? 'Edytuj pracownika' : 'Dodaj pracownika' }}</h2>
         <p>
-          Formularz pozwala utworzyć konto pracownika, nadać rolę systemową oraz przypisać funkcję zawodową.
+          Formularz pozwala utworzyć konto pracownika, nadać rolę systemową oraz przypisać funkcję
+          zawodową.
         </p>
       </div>
     </div>
@@ -24,42 +25,22 @@
       <div class="form-grid">
         <label>
           Imię
-          <input
-            name="firstName"
-            [(ngModel)]="form.firstName"
-            required
-            minlength="2"
-          />
+          <input name="firstName" [(ngModel)]="form.firstName" required minlength="2" />
         </label>
 
         <label>
           Nazwisko
-          <input
-            name="lastName"
-            [(ngModel)]="form.lastName"
-            required
-            minlength="2"
-          />
+          <input name="lastName" [(ngModel)]="form.lastName" required minlength="2" />
         </label>
 
         <label>
           Email
-          <input
-            name="email"
-            type="email"
-            [(ngModel)]="form.email"
-            required
-          />
+          <input name="email" type="email" [(ngModel)]="form.email" required />
         </label>
 
         <label>
           Telefon
-          <input
-            name="phoneNumber"
-            [(ngModel)]="form.phoneNumber"
-            required
-            minlength="7"
-          />
+          <input name="phoneNumber" [(ngModel)]="form.phoneNumber" required minlength="7" />
         </label>
 
         <label>
@@ -73,11 +54,7 @@
 
         <label>
           Funkcja
-          <select
-            name="employeeFunction"
-            [(ngModel)]="form.employeeFunction"
-            required
-          >
+          <select name="employeeFunction" [(ngModel)]="form.employeeFunction" required>
             @for (employeeFunction of employeeFunctionOptions; track employeeFunction.value) {
               <option [ngValue]="employeeFunction.value">
                 {{ employeeFunction.label }}
@@ -88,11 +65,19 @@
 
         <label class="full-width">
           Oddział
-          <input
-            name="departmentName"
-            [(ngModel)]="form.departmentName"
-            placeholder="np. Oddział Kardiologii"
-          />
+          <select name="departmentName" [(ngModel)]="form.departmentName">
+            <option value="">Nie przypisano</option>
+
+            @if (form.departmentName && !hasSelectedDepartmentInOptions()) {
+              <option [value]="form.departmentName">{{ form.departmentName }} (spoza listy)</option>
+            }
+
+            @for (department of departmentOptions; track department.id) {
+              <option [value]="department.name">
+                {{ getDepartmentOptionLabel(department) }}
+              </option>
+            }
+          </select>
         </label>
 
         <label class="full-width">
@@ -103,16 +88,14 @@
             [(ngModel)]="form.password"
             [required]="!isEditMode"
             minlength="8"
-            placeholder="{{ isEditMode ? 'Zostaw puste, jeśli nie zmieniasz hasła' : 'Minimum 8 znaków' }}"
+            placeholder="{{
+              isEditMode ? 'Zostaw puste, jeśli nie zmieniasz hasła' : 'Minimum 8 znaków'
+            }}"
           />
         </label>
 
         <label class="checkbox-row full-width">
-          <input
-            name="isActive"
-            type="checkbox"
-            [(ngModel)]="form.isActive"
-          />
+          <input name="isActive" type="checkbox" [(ngModel)]="form.isActive" />
           Pracownik aktywny
         </label>
       </div>

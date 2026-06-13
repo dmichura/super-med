@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   CreateEmployeePayload,
+  DepartmentOption,
   Employee,
   EmployeeFunction,
   EmployeeSystemRole,
@@ -39,6 +40,8 @@ export class EmployeeForm implements OnInit {
   isLoading = false;
   isSaving = false;
   errorMessage = '';
+
+  departmentOptions: DepartmentOption[] = [];
 
   readonly systemRoleOptions: Array<{
     value: EmployeeSystemRole;
@@ -101,6 +104,8 @@ export class EmployeeForm implements OnInit {
   };
 
   ngOnInit(): void {
+    this.loadDepartmentOptions();
+
     const employeeId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (employeeId) {
@@ -108,6 +113,19 @@ export class EmployeeForm implements OnInit {
       this.isEditMode = true;
       this.loadEmployee(employeeId);
     }
+  }
+
+  loadDepartmentOptions(): void {
+    this.employeesService.getDepartmentOptions().subscribe({
+      next: (departmentOptions) => {
+        this.departmentOptions = departmentOptions;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Nie udało się pobrać listy oddziałów.';
+        this.changeDetectorRef.detectChanges();
+      },
+    });
   }
 
   loadEmployee(employeeId: number): void {
@@ -155,8 +173,7 @@ export class EmployeeForm implements OnInit {
           this.router.navigate(['/employees', employee.id]);
         },
         error: () => {
-          this.errorMessage =
-            'Nie udało się zapisać zmian. Sprawdź dane pracownika.';
+          this.errorMessage = 'Nie udało się zapisać zmian. Sprawdź dane pracownika.';
           this.isSaving = false;
           this.changeDetectorRef.detectChanges();
         },
@@ -188,6 +205,20 @@ export class EmployeeForm implements OnInit {
         this.changeDetectorRef.detectChanges();
       },
     });
+  }
+
+  getDepartmentOptionLabel(department: DepartmentOption): string {
+    return `${department.name} (${department.code}, piętro ${department.floor})`;
+  }
+
+  hasSelectedDepartmentInOptions(): boolean {
+    if (!this.form.departmentName) {
+      return true;
+    }
+
+    return this.departmentOptions.some(
+      (department) => department.name === this.form.departmentName,
+    );
   }
 
   private fillForm(employee: Employee): void {

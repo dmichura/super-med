@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   CreateEmployeePayload,
+  DepartmentOption,
   Employee,
   UpdateEmployeePayload,
 } from '../../shared/models/employee.model';
@@ -12,11 +13,16 @@ import {
 })
 export class EmployeesService {
   private readonly apiUrl = '/api/v1/employees';
+  private readonly departmentsApiUrl = '/api/v1/hospital-structure/departments';
 
   constructor(private readonly httpClient: HttpClient) {}
 
   getEmployees(): Observable<Employee[]> {
     return this.httpClient.get<Employee[]>(this.apiUrl);
+  }
+
+  getDepartmentOptions(): Observable<DepartmentOption[]> {
+    return this.httpClient.get<DepartmentOption[]>(this.departmentsApiUrl);
   }
 
   createEmployee(payload: CreateEmployeePayload): Observable<Employee> {
