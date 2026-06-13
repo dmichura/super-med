@@ -18,16 +18,20 @@
       <div>
         <p class="eyebrow">Pacjent</p>
         <h2>{{ patient.firstName }} {{ patient.lastName }}</h2>
-        <p>
-          Szczegóły profilu pacjenta oraz status autoryzacji konta w Portalu Pacjenta.
-        </p>
+        <p>Szczegóły profilu pacjenta oraz status autoryzacji konta w Portalu Pacjenta.</p>
       </div>
 
-      @if (!patient.isAuthorized && patient.isActive) {
-        <button type="button" [disabled]="isAuthorizing" (click)="authorizePatient()">
-          {{ isAuthorizing ? 'Autoryzowanie...' : 'Autoryzuj konto' }}
-        </button>
-      }
+      <div class="header-actions">
+        <a class="secondary-button" [routerLink]="['/patients', patient.id, 'edit']">
+          Edytuj dane
+        </a>
+
+        @if (!patient.isAuthorized && patient.isActive) {
+          <button type="button" [disabled]="isAuthorizing" (click)="authorizePatient()">
+            {{ isAuthorizing ? 'Autoryzowanie...' : 'Autoryzuj konto' }}
+          </button>
+        }
+      </div>
     </div>
 
     <div class="details-grid">
@@ -84,8 +88,8 @@
 
     @if (!patient.isAuthorized) {
       <div class="info-box">
-        Konto pacjenta zostało utworzone, ale dostęp do dokumentacji medycznej
-        pozostaje zablokowany do czasu osobistej weryfikacji tożsamości w placówce.
+        Konto pacjenta zostało utworzone, ale dostęp do dokumentacji medycznej pozostaje zablokowany
+        do czasu osobistej weryfikacji tożsamości w placówce.
       </div>
     }
   }

@@ -6,13 +6,11 @@ import { MainLayout } from './layout/main-layout/main-layout';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () =>
-      import('./features/auth/pages/login/login').then((m) => m.Login),
+    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
   {
     path: 'register',
-    loadComponent: () =>
-      import('./features/auth/pages/register/register').then((m) => m.Register),
+    loadComponent: () => import('./features/auth/pages/register/register').then((m) => m.Register),
   },
   {
     path: '',
@@ -22,9 +20,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(
-            (m) => m.Dashboard,
-          ),
+          import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'patient-portal',
@@ -33,9 +29,9 @@ export const routes: Routes = [
           roles: ['PATIENT'],
         },
         loadComponent: () =>
-          import(
-            './features/patient-portal/pages/patient-portal-dashboard/patient-portal-dashboard'
-          ).then((m) => m.PatientPortalDashboard),
+          import('./features/patient-portal/pages/patient-portal-dashboard/patient-portal-dashboard').then(
+            (m) => m.PatientPortalDashboard,
+          ),
       },
       {
         path: 'patients',
@@ -49,15 +45,33 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'patients/new',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+          import('./features/patients/pages/patient-form/patient-form').then((m) => m.PatientForm),
+      },
+      {
+        path: 'patients/:id/edit',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+          import('./features/patients/pages/patient-form/patient-form').then((m) => m.PatientForm),
+      },
+      {
         path: 'patients/:id',
         canActivate: [roleGuard],
         data: {
           roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-          import(
-            './features/patients/pages/patient-details/patient-details'
-          ).then((m) => m.PatientDetails),
+          import('./features/patients/pages/patient-details/patient-details').then(
+            (m) => m.PatientDetails,
+          ),
       },
       {
         path: 'employees',
@@ -66,9 +80,9 @@ export const routes: Routes = [
           roles: ['ADMIN', 'DIRECTOR'],
         },
         loadComponent: () =>
-          import(
-            './features/employees/pages/employees-list/employees-list'
-          ).then((m) => m.EmployeesList),
+          import('./features/employees/pages/employees-list/employees-list').then(
+            (m) => m.EmployeesList,
+          ),
       },
       {
         path: 'employees/:id',
@@ -77,9 +91,9 @@ export const routes: Routes = [
           roles: ['ADMIN', 'DIRECTOR'],
         },
         loadComponent: () =>
-          import(
-            './features/employees/pages/employee-details/employee-details'
-          ).then((m) => m.EmployeeDetails),
+          import('./features/employees/pages/employee-details/employee-details').then(
+            (m) => m.EmployeeDetails,
+          ),
       },
       {
         path: 'hospital-structure',
@@ -88,9 +102,9 @@ export const routes: Routes = [
           roles: ['ADMIN', 'DIRECTOR', 'EMPLOYEE'],
         },
         loadComponent: () =>
-          import(
-            './features/hospital-structure/pages/hospital-structure-list/hospital-structure-list'
-          ).then((m) => m.HospitalStructureList),
+          import('./features/hospital-structure/pages/hospital-structure-list/hospital-structure-list').then(
+            (m) => m.HospitalStructureList,
+          ),
       },
       {
         path: 'medical-records',
@@ -99,9 +113,9 @@ export const routes: Routes = [
           roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-          import(
-            './features/medical-records/pages/medical-records-list/medical-records-list'
-          ).then((m) => m.MedicalRecordsList),
+          import('./features/medical-records/pages/medical-records-list/medical-records-list').then(
+            (m) => m.MedicalRecordsList,
+          ),
       },
       {
         path: 'medical-records/:id',
@@ -110,9 +124,9 @@ export const routes: Routes = [
           roles: ['ADMIN', 'EMPLOYEE'],
         },
         loadComponent: () =>
-          import(
-            './features/medical-records/pages/medical-record-details/medical-record-details'
-          ).then((m) => m.MedicalRecordDetails),
+          import('./features/medical-records/pages/medical-record-details/medical-record-details').then(
+            (m) => m.MedicalRecordDetails,
+          ),
       },
       {
         path: 'documents',

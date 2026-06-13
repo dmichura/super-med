@@ -8,3 +8,20 @@ export interface Patient {
   assignedDoctorName: string | null;
   isActive: boolean;
 }
+
+export interface CreatePatientPayload {
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  email: string;
+  assignedDoctorName: string | null;
+}
+
+export interface UpdatePatientPayload {
+  firstName?: string;
+  lastName?: string;
+  pesel?: string;
+  email?: string;
+  assignedDoctorName?: string | null;
+  isActive?: boolean;
+}

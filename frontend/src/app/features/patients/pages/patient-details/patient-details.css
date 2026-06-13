@@ -164,3 +164,28 @@ dd {
     grid-template-columns: 1fr;
   }
 }
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 130px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.14);
+  color: var(--color-main);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.secondary-button:hover {
+  color: var(--color-accent);
+}

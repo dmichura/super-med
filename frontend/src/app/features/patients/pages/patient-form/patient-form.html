@@ -1,0 +1,96 @@
+<section class="patient-form-page">
+  <a class="back-link" routerLink="/patients">← Wróć do listy pacjentów</a>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie danych pacjenta...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading) {
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Pacjenci</p>
+        <h2>{{ isEditMode ? 'Edytuj pacjenta' : 'Dodaj pacjenta' }}</h2>
+        <p>
+          Formularz pozwala dodać nowego pacjenta z poziomu panelu albo zmienić dane istniejącego profilu.
+        </p>
+      </div>
+    </div>
+
+    <form class="form-card" #patientForm="ngForm" (ngSubmit)="savePatient()">
+      <div class="form-grid">
+        <label>
+          Imię
+          <input
+            name="firstName"
+            [(ngModel)]="form.firstName"
+            required
+            minlength="2"
+          />
+        </label>
+
+        <label>
+          Nazwisko
+          <input
+            name="lastName"
+            [(ngModel)]="form.lastName"
+            required
+            minlength="2"
+          />
+        </label>
+
+        <label>
+          PESEL
+          <input
+            name="pesel"
+            [(ngModel)]="form.pesel"
+            required
+            minlength="11"
+            maxlength="11"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            name="email"
+            type="email"
+            [(ngModel)]="form.email"
+            required
+          />
+        </label>
+
+        <label class="full-width">
+          Lekarz prowadzący
+          <input
+            name="assignedDoctorName"
+            [(ngModel)]="form.assignedDoctorName"
+            placeholder="np. dr Anna Nowak"
+          />
+        </label>
+
+        @if (isEditMode) {
+          <label class="checkbox-row full-width">
+            <input
+              name="isActive"
+              type="checkbox"
+              [(ngModel)]="form.isActive"
+            />
+            Pacjent aktywny
+          </label>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="patientForm.invalid || isSaving">
+          {{ isSaving ? 'Zapisywanie...' : isEditMode ? 'Zapisz zmiany' : 'Dodaj pacjenta' }}
+        </button>
+
+        <a routerLink="/patients">Anuluj</a>
+      </div>
+    </form>
+  }
+</section>

@@ -147,3 +147,79 @@ tbody tr:last-child td {
   color: var(--color-accent);
   text-decoration: underline;
 }
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-main);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary-button:hover {
+  filter: brightness(0.94);
+}
+
+.filters-card {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) 220px 220px;
+  gap: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(237, 239, 241, 0.18);
+  border-radius: var(--radius-lg);
+  background: rgba(237, 239, 241, 0.08);
+}
+
+.filters-card label {
+  display: grid;
+  gap: 8px;
+  color: rgba(237, 239, 241, 0.72);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.filters-card input,
+.filters-card select {
+  height: 42px;
+  border: 1px solid rgba(237, 239, 241, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.1);
+  color: var(--color-main);
+  padding: 0 12px;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.filters-card input:focus,
+.filters-card select:focus {
+  outline: 2px solid rgba(186, 70, 67, 0.55);
+  border-color: transparent;
+}
+
+.results-summary {
+  margin: 0 0 14px;
+  color: rgba(237, 239, 241, 0.72);
+  font-weight: 700;
+}
+
+.row-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 960px) {
+  .filters-card {
+    grid-template-columns: 1fr;
+  }
+}

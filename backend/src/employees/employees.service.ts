@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from 'src/audit/audit.service';
+import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface';
 
 type EmployeeWithUser = Prisma.EmployeeGetPayload<{
   include: {
@@ -14,7 +16,10 @@ type EmployeeWithUser = Prisma.EmployeeGetPayload<{
 
 @Injectable()
 export class EmployeesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly auditService: AuditService,
+  ) {}
 
   async getEmployees() {
     const employees = await this.prismaService.employee.findMany({
@@ -54,7 +59,11 @@ export class EmployeesService {
     return this.mapEmployee(employee);
   }
 
-  async toggleEmployeeStatus(employeeId: number) {
+  async toggleEmployeeStatus(
+    employeeId: number,
+    actor: JwtPayload,
+    ipAddress: string,
+  ) {
     const employee = await this.prismaService.employee.findUnique({
       where: {
         id: employeeId,
@@ -100,7 +109,22 @@ export class EmployeesService {
       },
     );
 
-    return this.mapEmployee(updatedEmployee);
+    const mappedEmployee = this.mapEmployee(updatedEmployee);
+
+    await this.auditService.createAuditEvent({
+      actorName: actor.email,
+      actorRole: actor.role,
+      action: 'UPDATE',
+      resourceType: 'EMPLOYEE',
+      resourceName: `${mappedEmployee.firstName} ${mappedEmployee.lastName}`,
+      ipAddress,
+      result: 'SUCCESS',
+      reason: mappedEmployee.isActive
+        ? 'Aktywacja konta pracownika.'
+        : 'Dezaktywacja konta pracownika.',
+    });
+
+    return mappedEmployee;
   }
 
   private mapEmployee(employee: EmployeeWithUser) {
