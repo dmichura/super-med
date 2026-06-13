@@ -29,22 +29,57 @@ export class AuthService {
       throw new ConflictException('Konto z tym adresem email już istnieje.');
     }
 
+    const existingPatient = await this.prismaService.patient.findFirst({
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            pesel: registerPatientDto.pesel,
+          },
+        ],
+      },
+    });
+
+    if (existingPatient) {
+      throw new ConflictException(
+        'Pacjent z tym adresem email albo numerem PESEL już istnieje.',
+      );
+    }
+
     const passwordHash = await bcrypt.hash(registerPatientDto.password, 12);
 
-    const user = await this.prismaService.user.create({
-      data: {
-        email,
-        passwordHash,
-        role: 'PATIENT',
-        status: 'PENDING_VERIFICATION',
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        status: true,
-        createdAt: true,
-      },
+    const user = await this.prismaService.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          email,
+          passwordHash,
+          role: 'PATIENT',
+          status: 'PENDING_VERIFICATION',
+        },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          status: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.patient.create({
+        data: {
+          userId: createdUser.id,
+          firstName: registerPatientDto.firstName,
+          lastName: registerPatientDto.lastName,
+          pesel: registerPatientDto.pesel,
+          email,
+          isAuthorized: false,
+          isActive: true,
+        },
+      });
+
+      return createdUser;
     });
 
     return {
@@ -77,7 +112,9 @@ export class AuthService {
     }
 
     if (user.status === 'BLOCKED' || user.status === 'INACTIVE') {
-      throw new UnauthorizedException('Konto jest nieaktywne albo zablokowane.');
+      throw new UnauthorizedException(
+        'Konto jest nieaktywne albo zablokowane.',
+      );
     }
 
     const updatedUser = await this.prismaService.user.update({
@@ -108,7 +145,8 @@ export class AuthService {
       user: updatedUser,
     };
   }
-    async getMe(userId: string) {
+
+  async getMe(userId: string) {
     const user = await this.prismaService.user.findUnique({
       where: {
         id: userId,
@@ -128,7 +166,9 @@ export class AuthService {
     }
 
     if (user.status === 'BLOCKED' || user.status === 'INACTIVE') {
-      throw new UnauthorizedException('Konto jest nieaktywne albo zablokowane.');
+      throw new UnauthorizedException(
+        'Konto jest nieaktywne albo zablokowane.',
+      );
     }
 
     return user;

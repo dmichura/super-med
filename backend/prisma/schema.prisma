@@ -20,6 +20,15 @@ enum UserStatus {
   BLOCKED
 }
 
+enum EmployeeFunction {
+  DOCTOR
+  NURSE
+  PARAMEDIC
+  RECEPTIONIST
+  SECURITY
+  IT_ADMIN
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
@@ -30,7 +39,8 @@ model User {
   updatedAt    DateTime   @updatedAt @map("updated_at")
   lastLoginAt  DateTime?  @map("last_login_at")
 
-  patient Patient?
+  patient  Patient?
+  employee Employee?
 
   @@map("users")
 }
@@ -51,4 +61,22 @@ model Patient {
   user User? @relation(fields: [userId], references: [id])
 
   @@map("patients")
+}
+
+model Employee {
+  id               Int              @id @default(autoincrement())
+  userId           String?          @unique @map("user_id")
+  firstName        String           @map("first_name")
+  lastName         String           @map("last_name")
+  email            String           @unique
+  phoneNumber      String           @map("phone_number")
+  employeeFunction EmployeeFunction @map("employee_function")
+  departmentName   String?          @map("department_name")
+  isActive         Boolean          @default(true) @map("is_active")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("employees")
 }
