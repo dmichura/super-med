@@ -16,6 +16,7 @@ import {
   UpdateRoomPayload,
 } from '../../../../shared/models/hospital-structure.model';
 import { HospitalStructureService } from '../../hospital-structure.service';
+import { DoctorOption } from '../../../../shared/models/patient.model';
 
 interface DepartmentFormState {
   name: string;
@@ -66,6 +67,7 @@ export class HospitalStructureList implements OnInit {
   bedForm: BedFormState = this.getEmptyBedForm();
 
   patientOptions: PatientOption[] = [];
+  doctorOptions: DoctorOption[] = [];
 
   readonly bedStatusOptions: Array<{
     value: BedStatus;
@@ -132,10 +134,43 @@ export class HospitalStructureList implements OnInit {
     }
   }
 
+  loadDoctorOptions(): void {
+    this.hospitalStructureService.getDoctorOptions().subscribe({
+      next: (doctorOptions) => {
+        this.doctorOptions = doctorOptions;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Nie udało się pobrać listy lekarzy.';
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+  getDoctorAssignedName(doctor: DoctorOption): string {
+    return `dr ${doctor.firstName} ${doctor.lastName}`;
+  }
+
+  getDoctorOptionLabel(doctor: DoctorOption): string {
+    const departmentName = doctor.departmentName ? ` — ${doctor.departmentName}` : '';
+
+    return `${this.getDoctorAssignedName(doctor)}${departmentName}`;
+  }
+
+  hasSelectedHeadDoctorInOptions(): boolean {
+    if (!this.departmentForm.headDoctorName) {
+      return true;
+    }
+
+    return this.doctorOptions.some(
+      (doctor) => this.getDoctorAssignedName(doctor) === this.departmentForm.headDoctorName,
+    );
+  }
+
   ngOnInit(): void {
     this.loadDepartments();
     if (this.canManageStructure) {
       this.loadPatientOptions();
+      this.loadDoctorOptions();
     }
   }
 

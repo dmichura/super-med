@@ -59,13 +59,21 @@
 
         <label>
           Kierownik oddziału
-          <input
-            name="headDoctorName"
-            [(ngModel)]="departmentForm.headDoctorName"
-            required
-            minlength="2"
-            placeholder="np. dr Anna Nowak"
-          />
+          <select name="headDoctorName" [(ngModel)]="departmentForm.headDoctorName" required>
+            <option value="">Wybierz lekarza</option>
+
+            @if (departmentForm.headDoctorName && !hasSelectedHeadDoctorInOptions()) {
+              <option [value]="departmentForm.headDoctorName">
+                {{ departmentForm.headDoctorName }} (spoza listy)
+              </option>
+            }
+
+            @for (doctor of doctorOptions; track doctor.id) {
+              <option [value]="getDoctorAssignedName(doctor)">
+                {{ getDoctorOptionLabel(doctor) }}
+              </option>
+            }
+          </select>
         </label>
       </div>
 

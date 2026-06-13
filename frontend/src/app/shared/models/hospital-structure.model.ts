@@ -67,3 +67,11 @@ export interface PatientOption {
   email: string;
   isAuthorized: boolean;
 }
+
+export interface DoctorOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  departmentName: string | null;
+}

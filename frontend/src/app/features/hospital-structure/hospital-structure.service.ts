@@ -11,6 +11,7 @@ import {
   UpdateDepartmentPayload,
   UpdateRoomPayload,
 } from '../../shared/models/hospital-structure.model';
+import { DoctorOption } from '../../shared/models/patient.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,10 @@ export class HospitalStructureService {
   private readonly apiUrl = '/api/v1/hospital-structure';
 
   constructor(private readonly httpClient: HttpClient) {}
+
+  getDoctorOptions(): Observable<DoctorOption[]> {
+    return this.httpClient.get<DoctorOption[]>('/api/v1/employees/doctors/options');
+  }
 
   getDepartments(): Observable<HospitalDepartment[]> {
     return this.httpClient.get<HospitalDepartment[]>(`${this.apiUrl}/departments`);
