@@ -8,6 +8,7 @@ import { PatientsModule } from './patients/patients.module';
 import { EmployeesModule } from './employees/employees.module';
 import { HospitalStructureModule } from './hospital-structure/hospital-structure.module';
 import { MedicalRecordsModule } from './medical-records/medical-records.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
  imports: [
@@ -20,7 +21,8 @@ import { MedicalRecordsModule } from './medical-records/medical-records.module';
     PatientsModule,
     EmployeesModule,
     HospitalStructureModule,
-    MedicalRecordsModule
+    MedicalRecordsModule,
+    DocumentsModule
   ],
   controllers: [AppController],
   providers: [AppService],

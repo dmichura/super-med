@@ -563,12 +563,98 @@ async function seedMedicalRecords() {
   }
 }
 
+async function seedDocuments() {
+  const documents = [
+    {
+      code: 'DOC-001',
+      patientPesel: '12345678901',
+      type: 'MEDICAL_SCAN' as const,
+      fileName: 'ekg_jan_kowalski_2026_06_10.pdf',
+      status: 'VERIFIED' as const,
+      uploadedBy: 'dr Anna Nowak',
+      uploadedAt: new Date('2026-06-10T09:45:00.000Z'),
+      isSensitive: true,
+    },
+    {
+      code: 'DOC-002',
+      patientPesel: '98765432109',
+      type: 'LAB_ATTACHMENT' as const,
+      fileName: 'wyniki_laboratoryjne_maria_wisniewska.pdf',
+      status: 'UPLOADED' as const,
+      uploadedBy: 'Katarzyna Wójcik',
+      uploadedAt: new Date('2026-06-10T10:30:00.000Z'),
+      isSensitive: true,
+    },
+    {
+      code: 'DOC-003',
+      patientPesel: '11223344556',
+      type: 'CONSENT' as const,
+      fileName: 'zgoda_na_przetwarzanie_danych.pdf',
+      status: 'VERIFIED' as const,
+      uploadedBy: 'Recepcja',
+      uploadedAt: new Date('2026-06-09T14:15:00.000Z'),
+      isSensitive: false,
+    },
+    {
+      code: 'DOC-004',
+      patientPesel: '12345678901',
+      type: 'DISCHARGE_FILE' as const,
+      fileName: 'wypis_szpitalny_jan_kowalski.pdf',
+      status: 'ARCHIVED' as const,
+      uploadedBy: 'dr Anna Nowak',
+      uploadedAt: new Date('2026-06-08T12:10:00.000Z'),
+      isSensitive: true,
+    },
+  ];
+
+  for (const documentData of documents) {
+    const patient = await prisma.patient.findUnique({
+      where: {
+        pesel: documentData.patientPesel,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!patient) {
+      throw new Error(`Brak pacjenta o PESEL ${documentData.patientPesel}`);
+    }
+
+    await prisma.patientDocument.upsert({
+      where: {
+        code: documentData.code,
+      },
+      update: {
+        patientId: patient.id,
+        type: documentData.type,
+        fileName: documentData.fileName,
+        status: documentData.status,
+        uploadedBy: documentData.uploadedBy,
+        uploadedAt: documentData.uploadedAt,
+        isSensitive: documentData.isSensitive,
+      },
+      create: {
+        code: documentData.code,
+        patientId: patient.id,
+        type: documentData.type,
+        fileName: documentData.fileName,
+        status: documentData.status,
+        uploadedBy: documentData.uploadedBy,
+        uploadedAt: documentData.uploadedAt,
+        isSensitive: documentData.isSensitive,
+      },
+    });
+  }
+}
+
 async function main() {
   await seedStaffUsers();
   await seedPatients();
   await seedEmployees();
   await seedHospitalStructure();
   await seedMedicalRecords();
+  await seedDocuments();
 
   console.log('Seed zakończony.');
   console.log('');

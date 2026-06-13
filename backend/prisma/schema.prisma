@@ -57,6 +57,21 @@ enum MedicalRecordAuditAction {
   EXPORT
 }
 
+enum DocumentType {
+  MEDICAL_SCAN
+  LAB_ATTACHMENT
+  CONSENT
+  ADMINISTRATIVE
+  DISCHARGE_FILE
+}
+
+enum DocumentStatus {
+  UPLOADED
+  VERIFIED
+  REJECTED
+  ARCHIVED
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
@@ -89,6 +104,7 @@ model Patient {
   user User? @relation(fields: [userId], references: [id])
 
   medicalRecords MedicalRecord[]
+  documents PatientDocument[]
 
   @@map("patients")
 }
@@ -187,4 +203,22 @@ model MedicalRecordAuditEntry {
   medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
 
   @@map("medical_record_audit_entries")
+}
+
+model PatientDocument {
+  id          Int            @id @default(autoincrement())
+  code        String         @unique
+  patientId   Int            @map("patient_id")
+  type        DocumentType
+  fileName    String         @map("file_name")
+  status      DocumentStatus
+  uploadedBy  String         @map("uploaded_by")
+  uploadedAt  DateTime       @map("uploaded_at")
+  isSensitive Boolean        @default(true) @map("is_sensitive")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  @@map("patient_documents")
 }
