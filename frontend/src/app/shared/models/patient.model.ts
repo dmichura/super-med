@@ -25,3 +25,11 @@ export interface UpdatePatientPayload {
   assignedDoctorName?: string | null;
   isActive?: boolean;
 }
+
+export interface DoctorOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  departmentName: string | null;
+}

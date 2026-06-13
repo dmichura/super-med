@@ -8,6 +8,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 
+interface DoctorNameRow {
+  firstName: string;
+  lastName: string;
+}
+
 @Injectable()
 export class PatientsService {
   constructor(private readonly prismaService: PrismaService) {}

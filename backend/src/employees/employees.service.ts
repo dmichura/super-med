@@ -14,12 +14,37 @@ type EmployeeWithUser = Prisma.EmployeeGetPayload<{
   };
 }>;
 
+export interface DoctorOptionRow {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  departmentName: string | null;
+}
+
 @Injectable()
 export class EmployeesService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly auditService: AuditService,
   ) {}
+
+  async getActiveDoctorOptions() {
+    const doctors = await this.prismaService.$queryRaw<DoctorOptionRow[]>`
+    SELECT
+      id,
+      first_name AS "firstName",
+      last_name AS "lastName",
+      email,
+      department_name AS "departmentName"
+    FROM employees
+    WHERE employee_function = 'DOCTOR'
+      AND is_active = true
+    ORDER BY last_name ASC, first_name ASC
+  `;
+
+    return doctors;
+  }
 
   async getEmployees() {
     const employees = await this.prismaService.employee.findMany({

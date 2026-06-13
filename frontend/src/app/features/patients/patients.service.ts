@@ -5,6 +5,7 @@ import {
   CreatePatientPayload,
   Patient,
   UpdatePatientPayload,
+  DoctorOption,
 } from '../../shared/models/patient.model';
 
 @Injectable({
@@ -12,6 +13,7 @@ import {
 })
 export class PatientsService {
   private readonly apiUrl = '/api/v1/patients';
+  private readonly doctorOptionsApiUrl = '/api/v1/employees/doctors/options';
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -33,5 +35,9 @@ export class PatientsService {
 
   authorizePatient(patientId: number): Observable<Patient> {
     return this.httpClient.patch<Patient>(`${this.apiUrl}/${patientId}/authorize`, {});
+  }
+
+  getDoctorOptions(): Observable<DoctorOption[]> {
+    return this.httpClient.get<DoctorOption[]>(this.doctorOptionsApiUrl);
   }
 }

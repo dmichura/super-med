@@ -32,6 +32,12 @@ export class EmployeesController {
     return this.employeesService.getEmployees();
   }
 
+  @Get('doctors/options')
+  @Roles('ADMIN', 'DIRECTOR', 'EMPLOYEE')
+  getActiveDoctorOptions() {
+    return this.employeesService.getActiveDoctorOptions();
+  }
+
   @Get(':id')
   @Roles('ADMIN', 'DIRECTOR')
   getEmployeeById(@Param('id', ParseIntPipe) employeeId: number) {

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   CreatePatientPayload,
+  DoctorOption,
   Patient,
   UpdatePatientPayload,
 } from '../../../../shared/models/patient.model';
@@ -35,7 +36,10 @@ export class PatientForm implements OnInit {
     isActive: true,
   };
 
+  doctorOptions: DoctorOption[] = [];
+
   ngOnInit(): void {
+    this.loadDoctorOptions();
     const patientId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (patientId) {
@@ -43,6 +47,29 @@ export class PatientForm implements OnInit {
       this.isEditMode = true;
       this.loadPatient(patientId);
     }
+  }
+
+  loadDoctorOptions(): void {
+    this.patientsService.getDoctorOptions().subscribe({
+      next: (doctorOptions) => {
+        this.doctorOptions = doctorOptions;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Nie udało się pobrać listy lekarzy.';
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  getDoctorAssignedName(doctor: DoctorOption): string {
+    return `dr ${doctor.firstName} ${doctor.lastName}`;
+  }
+
+  getDoctorOptionLabel(doctor: DoctorOption): string {
+    const departmentName = doctor.departmentName ? ` — ${doctor.departmentName}` : '';
+
+    return `${this.getDoctorAssignedName(doctor)}${departmentName}`;
   }
 
   loadPatient(patientId: number): void {
@@ -82,8 +109,7 @@ export class PatientForm implements OnInit {
           this.router.navigate(['/patients', patient.id]);
         },
         error: () => {
-          this.errorMessage =
-            'Nie udało się zapisać zmian. Sprawdź dane pacjenta.';
+          this.errorMessage = 'Nie udało się zapisać zmian. Sprawdź dane pacjenta.';
           this.isSaving = false;
           this.changeDetectorRef.detectChanges();
         },
