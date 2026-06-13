@@ -149,12 +149,128 @@ async function seedPatients() {
   }
 }
 
+async function seedEmployees() {
+  const employees = [
+    {
+      firstName: 'Anna',
+      lastName: 'Nowak',
+      email: 'anna.nowak@supermed.pl',
+      password: 'Employee1234!',
+      phoneNumber: '+48 500 100 200',
+      userRole: 'EMPLOYEE' as const,
+      employeeFunction: 'DOCTOR' as const,
+      departmentName: 'Oddział Kardiologii',
+      isActive: true,
+      userStatus: 'ACTIVE' as const,
+    },
+    {
+      firstName: 'Piotr',
+      lastName: 'Zieliński',
+      email: 'piotr.zielinski@supermed.pl',
+      password: 'Employee1234!',
+      phoneNumber: '+48 500 200 300',
+      userRole: 'EMPLOYEE' as const,
+      employeeFunction: 'DOCTOR' as const,
+      departmentName: 'Oddział Neurologii',
+      isActive: true,
+      userStatus: 'ACTIVE' as const,
+    },
+    {
+      firstName: 'Katarzyna',
+      lastName: 'Wójcik',
+      email: 'katarzyna.wojcik@supermed.pl',
+      password: 'Employee1234!',
+      phoneNumber: '+48 500 300 400',
+      userRole: 'EMPLOYEE' as const,
+      employeeFunction: 'NURSE' as const,
+      departmentName: 'Oddział Kardiologii',
+      isActive: true,
+      userStatus: 'ACTIVE' as const,
+    },
+    {
+      firstName: 'Michał',
+      lastName: 'Kamiński',
+      email: 'michal.kaminski@supermed.pl',
+      password: 'Admin1234!',
+      phoneNumber: '+48 500 400 500',
+      userRole: 'ADMIN' as const,
+      employeeFunction: 'IT_ADMIN' as const,
+      departmentName: null,
+      isActive: true,
+      userStatus: 'ACTIVE' as const,
+    },
+    {
+      firstName: 'Ewa',
+      lastName: 'Lewandowska',
+      email: 'ewa.lewandowska@supermed.pl',
+      password: 'Director1234!',
+      phoneNumber: '+48 500 500 600',
+      userRole: 'DIRECTOR' as const,
+      employeeFunction: 'RECEPTIONIST' as const,
+      departmentName: null,
+      isActive: false,
+      userStatus: 'INACTIVE' as const,
+    },
+  ];
+
+  for (const employee of employees) {
+    const passwordHash = await bcrypt.hash(employee.password, 12);
+
+    const user = await prisma.user.upsert({
+      where: {
+        email: employee.email,
+      },
+      update: {
+        passwordHash,
+        role: employee.userRole,
+        status: employee.userStatus,
+      },
+      create: {
+        email: employee.email,
+        passwordHash,
+        role: employee.userRole,
+        status: employee.userStatus,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    await prisma.employee.upsert({
+      where: {
+        email: employee.email,
+      },
+      update: {
+        userId: user.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        phoneNumber: employee.phoneNumber,
+        employeeFunction: employee.employeeFunction,
+        departmentName: employee.departmentName,
+        isActive: employee.isActive,
+      },
+      create: {
+        userId: user.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        phoneNumber: employee.phoneNumber,
+        employeeFunction: employee.employeeFunction,
+        departmentName: employee.departmentName,
+        isActive: employee.isActive,
+      },
+    });
+  }
+}
+
 async function main() {
   await seedStaffUsers();
   await seedPatients();
+  await seedEmployees();
 
   console.log('Seed zakończony.');
-  console.log('Konta personelu:');
+  console.log('');
+  console.log('Konta administracyjne:');
   console.log('admin@supermed.pl / Admin1234!');
   console.log('director@supermed.pl / Director1234!');
   console.log('employee@supermed.pl / Employee1234!');
@@ -163,6 +279,13 @@ async function main() {
   console.log('jan.kowalski@supermed.pl / Patient1234!');
   console.log('maria.wisniewska@supermed.pl / Patient1234!');
   console.log('tomasz.wojcik@supermed.pl / Patient1234!');
+  console.log('');
+  console.log('Konta pracowników z listy:');
+  console.log('anna.nowak@supermed.pl / Employee1234!');
+  console.log('piotr.zielinski@supermed.pl / Employee1234!');
+  console.log('katarzyna.wojcik@supermed.pl / Employee1234!');
+  console.log('michal.kaminski@supermed.pl / Admin1234!');
+  console.log('ewa.lewandowska@supermed.pl / Director1234!');
 }
 
 main()
