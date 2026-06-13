@@ -18,3 +18,30 @@ export interface PatientDocument {
   uploadedAt: string;
   isSensitive: boolean;
 }
+
+export interface CreateDocumentPayload {
+  patientId: number;
+  type: DocumentType;
+  fileName: string;
+  status: DocumentStatus;
+  isSensitive: boolean;
+}
+
+export interface UpdateDocumentPayload {
+  patientId?: number;
+  type?: DocumentType;
+  fileName?: string;
+  status?: DocumentStatus;
+  isSensitive?: boolean;
+}
+
+export interface DocumentPatientOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  email: string;
+  isAuthorized: boolean;
+  assignedDoctorName: string | null;
+  isActive: boolean;
+}

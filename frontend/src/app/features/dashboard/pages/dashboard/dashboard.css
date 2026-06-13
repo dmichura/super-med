@@ -2,9 +2,20 @@
   color: var(--color-main);
 }
 
+.dashboard-header,
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .dashboard-header {
-  max-width: 820px;
   margin-bottom: 24px;
+}
+
+.dashboard-header > div:first-child {
+  max-width: 860px;
 }
 
 .eyebrow {
@@ -15,41 +26,235 @@
   letter-spacing: 0.08em;
 }
 
+h2,
+h3 {
+  margin: 0 0 10px;
+}
+
 h2 {
-  margin: 0 0 12px;
   font-size: 32px;
 }
 
+h3 {
+  font-size: 24px;
+}
+
 .dashboard-header p {
-  line-height: 1.6;
+  margin: 0;
   color: rgba(237, 239, 241, 0.78);
+  line-height: 1.6;
 }
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.card {
-  padding: 22px;
+.user-card,
+.state-card,
+.summary-card,
+.panel-card,
+.action-card {
   border: 1px solid rgba(237, 239, 241, 0.18);
   border-radius: var(--radius-lg);
   background: rgba(237, 239, 241, 0.08);
 }
 
-.card-label {
-  margin: 0 0 8px;
-  color: var(--color-accent);
-  font-weight: 800;
+.user-card {
+  display: grid;
+  gap: 8px;
+  min-width: 260px;
+  padding: 18px;
 }
 
-h3 {
-  margin: 0 0 10px;
+.user-card strong {
   color: var(--color-main);
 }
 
-.card p:last-child {
-  margin: 0;
-  color: rgba(237, 239, 241, 0.76);
+.user-card small {
+  color: rgba(237, 239, 241, 0.68);
+}
+
+.state-card {
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.state-card.error {
+  color: var(--color-accent);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(186, 70, 67, 0.24);
+  color: var(--color-main);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  padding: 20px;
+}
+
+.summary-card p {
+  margin: 0 0 12px;
+  color: rgba(237, 239, 241, 0.72);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.summary-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-main);
+  font-size: 34px;
+}
+
+.summary-card span {
+  color: rgba(237, 239, 241, 0.72);
+}
+
+.summary-card.warning {
+  background: rgba(186, 70, 67, 0.16);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel-card {
+  padding: 22px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+}
+
+.section-header a {
+  color: var(--color-main);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.section-header a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.department-list,
+.priority-list {
+  display: grid;
+  gap: 10px;
+}
+
+.department-row,
+.priority-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.08);
+}
+
+.department-row strong,
+.priority-row strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--color-main);
+}
+
+.department-row span,
+.priority-row span {
+  color: rgba(237, 239, 241, 0.7);
+}
+
+.priority-row {
+  text-decoration: none;
+}
+
+.priority-row:hover {
+  background: rgba(237, 239, 241, 0.12);
+}
+
+.quick-actions-card {
+  margin-top: 18px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.action-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  color: var(--color-main);
+  text-decoration: none;
+}
+
+.action-card:hover {
+  border-color: rgba(186, 70, 67, 0.72);
+  background: rgba(186, 70, 67, 0.12);
+}
+
+.action-card strong {
+  font-size: 17px;
+}
+
+.action-card span {
+  color: rgba(237, 239, 241, 0.72);
+  line-height: 1.5;
+}
+
+.empty-row {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.06);
+  color: rgba(237, 239, 241, 0.7);
+}
+
+@media (max-width: 1200px) {
+  .summary-grid,
+  .actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-header,
+  .section-header,
+  .department-row,
+  .priority-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-grid,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-card {
+    width: 100%;
+  }
 }

@@ -4,12 +4,12 @@
       <p class="eyebrow">Dokumenty</p>
       <h2>Pliki pacjentów</h2>
       <p>
-        Widok testowy dokumentów medycznych i administracyjnych. Docelowo dane będą
-        pobierane z endpointu <strong>GET /api/v1/documents</strong>.
+        Zarządzanie dokumentami pacjentów: metadane plików, status weryfikacji, typ dokumentu i
+        oznaczenie danych wrażliwych.
       </p>
     </div>
 
-    <button type="button">Dodaj dokument</button>
+    <button type="button" (click)="showCreateForm()">Dodaj dokument</button>
   </div>
 
   @if (isLoading) {
@@ -20,7 +20,123 @@
     <div class="state-card error">{{ errorMessage }}</div>
   }
 
+  @if (successMessage) {
+    <div class="state-card success">{{ successMessage }}</div>
+  }
+
+  @if (!isLoading && isFormVisible) {
+    <form class="form-card" #documentForm="ngForm" (ngSubmit)="saveDocument()">
+      <div class="form-header">
+        <h3>{{ editingDocumentId ? 'Edytuj dokument' : 'Dodaj dokument' }}</h3>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          Pacjent
+          <select name="patientId" [(ngModel)]="form.patientId" required>
+            <option [ngValue]="null">Wybierz pacjenta</option>
+
+            @for (patient of patientOptions; track patient.id) {
+              <option [ngValue]="patient.id">
+                {{ getPatientOptionLabel(patient) }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Typ dokumentu
+          <select name="type" [(ngModel)]="form.type" required>
+            @for (type of typeOptions; track type.value) {
+              <option [ngValue]="type.value">{{ type.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Status
+          <select name="status" [(ngModel)]="form.status" required>
+            @for (status of statusOptions; track status.value) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Nazwa pliku
+          <input
+            name="fileName"
+            [(ngModel)]="form.fileName"
+            required
+            minlength="3"
+            placeholder="np. wynik-morfologia.pdf"
+          />
+        </label>
+
+        <label class="checkbox-row full-width">
+          <input name="isSensitive" type="checkbox" [(ngModel)]="form.isSensitive" />
+          Dane wrażliwe
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="documentForm.invalid || isSaving">
+          {{ isSaving ? 'Zapisywanie...' : editingDocumentId ? 'Zapisz zmiany' : 'Dodaj dokument' }}
+        </button>
+
+        <button type="button" class="secondary-button" (click)="cancelForm()">Anuluj</button>
+      </div>
+    </form>
+  }
+
   @if (!isLoading && !errorMessage) {
+    <div class="filters-card">
+      <label>
+        Szukaj
+        <input
+          type="search"
+          placeholder="Pacjent, PESEL, nazwa pliku, osoba dodająca..."
+          [(ngModel)]="searchTerm"
+        />
+      </label>
+
+      <label>
+        Typ
+        <select [(ngModel)]="typeFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="MEDICAL_SCAN">Skan medyczny</option>
+          <option value="LAB_ATTACHMENT">Załącznik laboratoryjny</option>
+          <option value="CONSENT">Zgoda pacjenta</option>
+          <option value="ADMINISTRATIVE">Administracyjny</option>
+          <option value="DISCHARGE_FILE">Wypis szpitalny</option>
+        </select>
+      </label>
+
+      <label>
+        Status
+        <select [(ngModel)]="statusFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="UPLOADED">Wgrany</option>
+          <option value="VERIFIED">Zweryfikowany</option>
+          <option value="REJECTED">Odrzucony</option>
+          <option value="ARCHIVED">Zarchiwizowany</option>
+        </select>
+      </label>
+
+      <label>
+        Wrażliwe
+        <select [(ngModel)]="sensitiveFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="SENSITIVE">Tak</option>
+          <option value="STANDARD">Nie</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="results-summary">
+      Wyniki: {{ filteredDocuments.length }} / {{ documents.length }}
+    </div>
+
     <div class="table-card">
       <table>
         <thead>
@@ -33,11 +149,12 @@
             <th>Wrażliwe</th>
             <th>Dodał</th>
             <th>Data dodania</th>
+            <th>Akcje</th>
           </tr>
         </thead>
 
         <tbody>
-          @for (document of documents; track document.id) {
+          @for (document of filteredDocuments; track document.id) {
             <tr>
               <td>
                 <strong>{{ document.patientName }}</strong>
@@ -57,6 +174,26 @@
               </td>
               <td>{{ document.uploadedBy }}</td>
               <td>{{ document.uploadedAt }}</td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="link-button" (click)="editDocument(document)">
+                    Edytuj
+                  </button>
+
+                  <button
+                    type="button"
+                    class="link-button danger-link"
+                    [disabled]="deletingDocumentId === document.id"
+                    (click)="deleteDocument(document)"
+                  >
+                    {{ deletingDocumentId === document.id ? 'Usuwanie...' : 'Usuń' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9">Brak dokumentów spełniających wybrane filtry.</td>
             </tr>
           }
         </tbody>

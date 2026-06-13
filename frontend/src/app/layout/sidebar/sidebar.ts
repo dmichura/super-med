@@ -48,11 +48,11 @@ export class Sidebar {
       path: '/medical-records',
       roles: ['ADMIN', 'EMPLOYEE'],
     },
-    {
-      label: 'Raporty',
-      path: '/reports',
-      roles: ['ADMIN', 'DIRECTOR'],
-    },
+    // {
+    //   label: 'Raporty',
+    //   path: '/reports',
+    //   roles: ['ADMIN', 'DIRECTOR'],
+    // },
     {
       label: 'Dokumenty',
       path: '/documents',

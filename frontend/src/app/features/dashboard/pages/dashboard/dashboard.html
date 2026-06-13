@@ -1,25 +1,169 @@
 <section class="dashboard">
   <div class="dashboard-header">
-    <p class="eyebrow">Dashboard</p>
-    <h2>Witaj w panelu SuperMED</h2>
-    <p>
-        SuperMED to system zarządzania szpitalem i elektroniczną dokumentacją medyczną.
-        Kolejne moduły obejmują pacjentów, pracowników, strukturę szpitala,
-        dokumentację, raporty, dokumenty i audyt dostępu.
-    </p>
+    <div>
+      <p class="eyebrow">Dashboard</p>
+      <h2>Witaj w panelu SuperMED</h2>
+      <p>
+        Centralny widok systemu zarządzania szpitalem, pacjentami, personelem, dokumentacją medyczną
+        oraz strukturą oddziałów.
+      </p>
+    </div>
+
+    <div class="user-card">
+      <span class="badge">{{ roleLabel }}</span>
+      <strong>{{ currentUser?.email || 'Użytkownik' }}</strong>
+      <small>Status: {{ currentUser?.status || 'ACTIVE' }}</small>
+    </div>
   </div>
 
-  <div class="cards">
-    <article class="card">
-      <p class="card-label">Status</p>
-      <h3>Frontend działa</h3>
-      <p>Routing, AuthGuard, JWT Interceptor i layout są przygotowane.</p>
-    </article>
+  @if (canSeeOperationalSummary) {
+    @if (isLoadingReport) {
+      <div class="state-card">Ładowanie danych dashboardu...</div>
+    }
 
-    <article class="card">
-      <p class="card-label">Następny moduł</p>
-      <h3>Pacjenci</h3>
-      <p>Po layoucie zaczniemy robić listę pacjentów i serwis API.</p>
-    </article>
-  </div>
+    @if (reportErrorMessage) {
+      <div class="state-card error">{{ reportErrorMessage }}</div>
+    }
+
+    @if (!isLoadingReport && reportData) {
+      <div class="summary-grid">
+        <article class="summary-card">
+          <p>Pacjenci</p>
+          <strong>{{ reportData.summary.totalPatients }}</strong>
+          <span>łącznie w systemie</span>
+        </article>
+
+        <article class="summary-card warning">
+          <p>Do autoryzacji</p>
+          <strong>{{ reportData.summary.pendingPatientAuthorizations }}</strong>
+          <span>pacjentów oczekuje</span>
+        </article>
+
+        <article class="summary-card">
+          <p>Pracownicy</p>
+          <strong>{{ reportData.summary.activeEmployees }}</strong>
+          <span>aktywnych kont</span>
+        </article>
+
+        <article class="summary-card">
+          <p>Obłożenie</p>
+          <strong>{{ occupancyPercent }}%</strong>
+          <span>{{ reportData.summary.occupiedBeds }} zajętych z {{ totalBeds }}</span>
+        </article>
+
+        <article class="summary-card">
+          <p>Wolne łóżka</p>
+          <strong>{{ reportData.summary.freeBeds }}</strong>
+          <span>dostępne miejsca</span>
+        </article>
+
+        <article class="summary-card">
+          <p>Dokumentacja</p>
+          <strong>{{ reportData.summary.medicalRecords }}</strong>
+          <span>wpisów medycznych</span>
+        </article>
+
+        <article class="summary-card warning">
+          <p>Dane wrażliwe</p>
+          <strong>{{ reportData.summary.sensitiveMedicalRecords }}</strong>
+          <span>wymagają audytu</span>
+        </article>
+
+        <article class="summary-card">
+          <p>Audyt</p>
+          <strong>{{ reportData.summary.auditEvents }}</strong>
+          <span>zdarzeń systemowych</span>
+        </article>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="panel-card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Oddziały</p>
+              <h3>Obłożenie oddziałów</h3>
+            </div>
+
+            <a routerLink="/hospital-structure">Zarządzaj strukturą</a>
+          </div>
+
+          <div class="department-list">
+            @for (department of reportData.departmentOccupancy; track department.departmentName) {
+              <div class="department-row">
+                <div>
+                  <strong>{{ department.departmentName }}</strong>
+                  <span>
+                    {{ department.occupiedBeds }} zajęte · {{ department.freeBeds }} wolne ·
+                    {{ department.blockedBeds }} zablokowane
+                  </span>
+                </div>
+
+                <span class="badge">
+                  {{ getOccupancyPercent(department.totalBeds, department.occupiedBeds) }}%
+                </span>
+              </div>
+            } @empty {
+              <div class="empty-row">Brak oddziałów w systemie.</div>
+            }
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Priorytety</p>
+              <h3>Co wymaga uwagi</h3>
+            </div>
+          </div>
+
+          <div class="priority-list">
+            <a routerLink="/patients" class="priority-row">
+              <strong>Autoryzacje pacjentów</strong>
+              <span>{{ reportData.summary.pendingPatientAuthorizations }} oczekuje</span>
+            </a>
+
+            <a routerLink="/medical-records" class="priority-row">
+              <strong>Dane wrażliwe</strong>
+              <span>{{ reportData.summary.sensitiveMedicalRecords }} wpisów</span>
+            </a>
+
+            <a routerLink="/hospital-structure" class="priority-row">
+              <strong>Wolne łóżka</strong>
+              <span>{{ reportData.summary.freeBeds }} dostępne</span>
+            </a>
+
+            <a routerLink="/audit" class="priority-row">
+              <strong>Audyt systemowy</strong>
+              <span>{{ reportData.summary.auditEvents }} zdarzeń</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    }
+  } @else {
+    <div class="state-card">
+      Ten widok pokazuje moduły dostępne dla Twojej roli. Statystyki operacyjne są dostępne dla
+      administratora i dyrektora.
+    </div>
+  }
+
+  <article class="panel-card quick-actions-card">
+    <div class="section-header">
+      <div>
+        <p class="eyebrow">Szybkie akcje</p>
+        <h3>Dostępne moduły</h3>
+      </div>
+    </div>
+
+    <div class="actions-grid">
+      @for (action of visibleActions; track action.route) {
+        <a class="action-card" [routerLink]="action.route">
+          <strong>{{ action.title }}</strong>
+          <span>{{ action.description }}</span>
+        </a>
+      } @empty {
+        <div class="empty-row">Brak dostępnych modułów dla aktualnej roli.</div>
+      }
+    </div>
+  </article>
 </section>

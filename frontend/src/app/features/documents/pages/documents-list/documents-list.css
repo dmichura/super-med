@@ -1,5 +1,6 @@
 .documents-page {
   color: var(--color-main);
+  min-width: 0;
 }
 
 .page-header {
@@ -18,9 +19,17 @@
   letter-spacing: 0.08em;
 }
 
-h2 {
+h2,
+h3 {
   margin: 0 0 10px;
+}
+
+h2 {
   font-size: 32px;
+}
+
+h3 {
+  font-size: 24px;
 }
 
 .page-header p {
@@ -45,8 +54,15 @@ button:hover {
   filter: brightness(0.94);
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .state-card,
-.table-card {
+.table-card,
+.filters-card,
+.form-card {
   border: 1px solid rgba(237, 239, 241, 0.18);
   border-radius: var(--radius-lg);
   background: rgba(237, 239, 241, 0.08);
@@ -54,24 +70,132 @@ button:hover {
 
 .state-card {
   padding: 22px;
+  margin-bottom: 18px;
 }
 
 .state-card.error {
   color: var(--color-accent);
 }
 
+.state-card.success {
+  background: rgba(237, 239, 241, 0.12);
+}
+
+.form-card {
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.form-header {
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: rgba(237, 239, 241, 0.72);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+input,
+select {
+  height: 42px;
+  border: 1px solid rgba(237, 239, 241, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.1);
+  color: var(--color-main);
+  padding: 0 12px;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid rgba(186, 70, 67, 0.55);
+  border-color: transparent;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  background: rgba(237, 239, 241, 0.14);
+}
+
+.filters-card {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 190px 170px 150px;
+  gap: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.filters-card label {
+  margin: 0;
+}
+
+.results-summary {
+  margin: 0 0 14px;
+  color: rgba(237, 239, 241, 0.72);
+  font-weight: 700;
+}
+
 .table-card {
-  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.table-card::-webkit-scrollbar {
+  height: 10px;
+}
+
+.table-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(237, 239, 241, 0.24);
 }
 
 table {
   width: 100%;
+  min-width: 1180px;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th,
 td {
-  padding: 16px;
+  padding: 14px 12px;
   text-align: left;
   border-bottom: 1px solid rgba(237, 239, 241, 0.12);
   vertical-align: top;
@@ -90,6 +214,56 @@ td {
 
 tbody tr:last-child td {
   border-bottom: none;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 150px;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 150px;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 150px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  width: 290px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+  width: 150px;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 110px;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+  width: 140px;
+}
+
+th:nth-child(8),
+td:nth-child(8) {
+  width: 140px;
+}
+
+th:nth-child(9),
+td:nth-child(9) {
+  width: 130px;
+}
+
+td:nth-child(4) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .badge {
@@ -113,16 +287,47 @@ tbody tr:last-child td {
   opacity: 0.58;
 }
 
+.row-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.link-button {
+  min-width: auto;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-main);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  filter: none;
+}
+
+.danger-link {
+  color: var(--color-accent);
+}
+
 @media (max-width: 1200px) {
   .page-header {
     flex-direction: column;
   }
 
-  .table-card {
-    overflow-x: auto;
+  .filters-card,
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
   table {
-    min-width: 1100px;
+    min-width: 1120px;
   }
 }
