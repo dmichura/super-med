@@ -9,6 +9,7 @@ import { EmployeesModule } from './employees/employees.module';
 import { HospitalStructureModule } from './hospital-structure/hospital-structure.module';
 import { MedicalRecordsModule } from './medical-records/medical-records.module';
 import { DocumentsModule } from './documents/documents.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
  imports: [
@@ -22,7 +23,8 @@ import { DocumentsModule } from './documents/documents.module';
     EmployeesModule,
     HospitalStructureModule,
     MedicalRecordsModule,
-    DocumentsModule
+    DocumentsModule,
+    ReportsModule
   ],
   controllers: [AppController],
   providers: [AppService],
