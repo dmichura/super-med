@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import {
   DocumentStatus,
   DocumentType,
@@ -14,6 +14,7 @@ import { DocumentsService } from '../../documents.service';
 })
 export class DocumentsList implements OnInit {
   private readonly documentsService = inject(DocumentsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   documents: PatientDocument[] = [];
   isLoading = true;
@@ -31,10 +32,12 @@ export class DocumentsList implements OnInit {
       next: (documents) => {
         this.documents = documents;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać listy dokumentów.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
