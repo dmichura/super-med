@@ -108,4 +108,29 @@ export class AuthService {
       user: updatedUser,
     };
   }
+    async getMe(userId: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        lastLoginAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Użytkownik nie istnieje.');
+    }
+
+    if (user.status === 'BLOCKED' || user.status === 'INACTIVE') {
+      throw new UnauthorizedException('Konto jest nieaktywne albo zablokowane.');
+    }
+
+    return user;
+  }
 }

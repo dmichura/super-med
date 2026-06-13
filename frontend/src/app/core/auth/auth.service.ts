@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
 const ACCESS_TOKEN_KEY = 'supermed_access_token';
+const AUTH_USER_KEY = 'supermed_auth_user';
 
 export type UserRole = 'ADMIN' | 'DIRECTOR' | 'EMPLOYEE' | 'PATIENT';
 
@@ -64,6 +65,21 @@ export class AuthService {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);
   }
 
+  getAuthenticatedUser(): AuthUser | null {
+    const rawUser = localStorage.getItem(AUTH_USER_KEY);
+
+    if (!rawUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(rawUser) as AuthUser;
+    } catch {
+      this.clearSession();
+      return null;
+    }
+  }
+
   isLoggedIn(): boolean {
     return !!this.getAccessToken();
   }
@@ -74,6 +90,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           this.setAccessToken(response.accessToken);
+          this.setAuthenticatedUser(response.user);
         }),
       );
   }
@@ -87,8 +104,35 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  getCurrentUser(): Observable<AuthUser> {
+    return this.httpClient.get<AuthUser>(`${this.apiUrl}/me`).pipe(
+      tap((user) => {
+        this.setAuthenticatedUser(user);
+      }),
+    );
+  }
+
+  hasAllowedRole(allowedRoles: UserRole[]): boolean {
+    const user = this.getAuthenticatedUser();
+
+    if (!user) {
+      return false;
+    }
+
+    return allowedRoles.includes(user.role);
+  }
+
+  clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+  }
+
+  logout(): void {
+    this.clearSession();
     this.router.navigate(['/login']);
+  }
+
+  private setAuthenticatedUser(user: AuthUser): void {
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
   }
 }
