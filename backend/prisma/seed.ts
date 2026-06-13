@@ -397,11 +397,178 @@ async function seedHospitalStructure() {
   }
 }
 
+async function seedMedicalRecords() {
+  const records = [
+    {
+      code: 'MR-001',
+      patientPesel: '12345678901',
+      doctorName: 'dr Anna Nowak',
+      departmentName: 'Oddział Kardiologii',
+      type: 'VISIT' as const,
+      title: 'Wizyta kontrolna po hospitalizacji',
+      createdAt: new Date('2026-06-10T00:00:00.000Z'),
+      status: 'FINAL' as const,
+      isSensitive: true,
+      description:
+        'Pacjent zgłosił się na kontrolę po hospitalizacji. Zalecono dalszą obserwację, kontrolę ciśnienia oraz kontynuację leczenia.',
+      auditTrail: [
+        {
+          actorName: 'dr Anna Nowak',
+          action: 'CREATE' as const,
+          accessedAt: new Date('2026-06-10T09:15:00.000Z'),
+          reason: 'Utworzenie wpisu po wizycie kontrolnej.',
+        },
+        {
+          actorName: 'Katarzyna Wójcik',
+          action: 'VIEW' as const,
+          accessedAt: new Date('2026-06-10T10:20:00.000Z'),
+          reason: 'Weryfikacja zaleceń pielęgniarskich.',
+        },
+      ],
+    },
+    {
+      code: 'MR-002',
+      patientPesel: '98765432109',
+      doctorName: 'dr Piotr Zieliński',
+      departmentName: 'Oddział Neurologii',
+      type: 'DIAGNOSIS' as const,
+      title: 'Rozpoznanie neurologiczne',
+      createdAt: new Date('2026-06-09T00:00:00.000Z'),
+      status: 'FINAL' as const,
+      isSensitive: true,
+      description:
+        'Opis rozpoznania neurologicznego pacjentki. Dokument zawiera dane wrażliwe i wymaga pełnego audytu dostępu.',
+      auditTrail: [
+        {
+          actorName: 'dr Piotr Zieliński',
+          action: 'CREATE' as const,
+          accessedAt: new Date('2026-06-09T13:40:00.000Z'),
+          reason: 'Utworzenie rozpoznania.',
+        },
+      ],
+    },
+    {
+      code: 'MR-003',
+      patientPesel: '11223344556',
+      doctorName: 'dr Anna Nowak',
+      departmentName: 'Oddział Kardiologii',
+      type: 'LAB_RESULT' as const,
+      title: 'Wyniki badań laboratoryjnych',
+      createdAt: new Date('2026-06-08T00:00:00.000Z'),
+      status: 'DRAFT' as const,
+      isSensitive: true,
+      description:
+        'Wstępny wpis dotyczący wyników badań laboratoryjnych. Dokument pozostaje w statusie roboczym.',
+      auditTrail: [
+        {
+          actorName: 'dr Anna Nowak',
+          action: 'CREATE' as const,
+          accessedAt: new Date('2026-06-08T08:55:00.000Z'),
+          reason: 'Dodanie wyników badań.',
+        },
+      ],
+    },
+    {
+      code: 'MR-004',
+      patientPesel: '12345678901',
+      doctorName: 'dr Anna Nowak',
+      departmentName: 'Oddział Kardiologii',
+      type: 'PRESCRIPTION' as const,
+      title: 'Recepta po konsultacji',
+      createdAt: new Date('2026-06-07T00:00:00.000Z'),
+      status: 'ARCHIVED' as const,
+      isSensitive: true,
+      description:
+        'Archiwalny wpis recepty wystawionej po konsultacji kardiologicznej.',
+      auditTrail: [
+        {
+          actorName: 'dr Anna Nowak',
+          action: 'CREATE' as const,
+          accessedAt: new Date('2026-06-07T11:30:00.000Z'),
+          reason: 'Wystawienie recepty.',
+        },
+        {
+          actorName: 'Michał Kamiński',
+          action: 'EXPORT' as const,
+          accessedAt: new Date('2026-06-07T12:05:00.000Z'),
+          reason: 'Test eksportu dokumentu do systemu EDM.',
+        },
+      ],
+    },
+  ];
+
+  for (const recordData of records) {
+    const patient = await prisma.patient.findUnique({
+      where: {
+        pesel: recordData.patientPesel,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!patient) {
+      throw new Error(`Brak pacjenta o PESEL ${recordData.patientPesel}`);
+    }
+
+    const record = await prisma.medicalRecord.upsert({
+      where: {
+        code: recordData.code,
+      },
+      update: {
+        patientId: patient.id,
+        doctorName: recordData.doctorName,
+        departmentName: recordData.departmentName,
+        type: recordData.type,
+        title: recordData.title,
+        createdAt: recordData.createdAt,
+        status: recordData.status,
+        isSensitive: recordData.isSensitive,
+        description: recordData.description,
+      },
+      create: {
+        code: recordData.code,
+        patientId: patient.id,
+        doctorName: recordData.doctorName,
+        departmentName: recordData.departmentName,
+        type: recordData.type,
+        title: recordData.title,
+        createdAt: recordData.createdAt,
+        status: recordData.status,
+        isSensitive: recordData.isSensitive,
+        description: recordData.description,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    await prisma.medicalRecordAuditEntry.deleteMany({
+      where: {
+        medicalRecordId: record.id,
+      },
+    });
+
+    for (const auditEntry of recordData.auditTrail) {
+      await prisma.medicalRecordAuditEntry.create({
+        data: {
+          medicalRecordId: record.id,
+          actorName: auditEntry.actorName,
+          action: auditEntry.action,
+          accessedAt: auditEntry.accessedAt,
+          reason: auditEntry.reason,
+        },
+      });
+    }
+  }
+}
+
 async function main() {
   await seedStaffUsers();
   await seedPatients();
   await seedEmployees();
   await seedHospitalStructure();
+  await seedMedicalRecords();
 
   console.log('Seed zakończony.');
   console.log('');

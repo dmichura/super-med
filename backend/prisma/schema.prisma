@@ -36,6 +36,27 @@ enum BedStatus {
   CLEANING
 }
 
+enum MedicalRecordType {
+  VISIT
+  DIAGNOSIS
+  PRESCRIPTION
+  LAB_RESULT
+  DISCHARGE_SUMMARY
+}
+
+enum MedicalRecordStatus {
+  DRAFT
+  FINAL
+  ARCHIVED
+}
+
+enum MedicalRecordAuditAction {
+  VIEW
+  CREATE
+  UPDATE
+  EXPORT
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
@@ -66,6 +87,8 @@ model Patient {
   updatedAt          DateTime @updatedAt @map("updated_at")
 
   user User? @relation(fields: [userId], references: [id])
+
+  medicalRecords MedicalRecord[]
 
   @@map("patients")
 }
@@ -130,4 +153,38 @@ model HospitalBed {
 
   @@unique([roomId, number])
   @@map("hospital_beds")
+}
+
+model MedicalRecord {
+  id             Int                 @id @default(autoincrement())
+  code           String              @unique
+  patientId      Int                 @map("patient_id")
+  doctorName     String              @map("doctor_name")
+  departmentName String              @map("department_name")
+  type           MedicalRecordType
+  title          String
+  createdAt      DateTime            @map("created_at")
+  status         MedicalRecordStatus
+  isSensitive    Boolean             @default(true) @map("is_sensitive")
+  description    String
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  patient    Patient                   @relation(fields: [patientId], references: [id])
+  auditTrail MedicalRecordAuditEntry[]
+
+  @@map("medical_records")
+}
+
+model MedicalRecordAuditEntry {
+  id              Int                      @id @default(autoincrement())
+  medicalRecordId Int                      @map("medical_record_id")
+  actorName       String                   @map("actor_name")
+  action          MedicalRecordAuditAction
+  accessedAt      DateTime                 @map("accessed_at")
+  reason          String
+  createdAt       DateTime                 @default(now()) @map("created_at")
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Cascade)
+
+  @@map("medical_record_audit_entries")
 }

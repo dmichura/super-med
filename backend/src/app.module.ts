@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
 import { EmployeesModule } from './employees/employees.module';
 import { HospitalStructureModule } from './hospital-structure/hospital-structure.module';
+import { MedicalRecordsModule } from './medical-records/medical-records.module';
 
 @Module({
  imports: [
@@ -18,7 +19,8 @@ import { HospitalStructureModule } from './hospital-structure/hospital-structure
     AuthModule,
     PatientsModule,
     EmployeesModule,
-    HospitalStructureModule
+    HospitalStructureModule,
+    MedicalRecordsModule
   ],
   controllers: [AppController],
   providers: [AppService],
