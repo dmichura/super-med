@@ -3,13 +3,12 @@
     <div>
       <p class="eyebrow">Struktura szpitala</p>
       <h2>Oddziały, sale i łóżka</h2>
-      <p>
-        Widok testowy struktury placówki. Docelowo dane będą pobierane z endpointu
-        <strong>GET /api/v1/hospital-structure/departments</strong>.
-      </p>
+      <p>Zarządzanie strukturą szpitala: oddziałami, salami oraz łóżkami.</p>
     </div>
 
-    <button type="button">Dodaj oddział</button>
+    @if (canManageStructure) {
+      <button type="button" (click)="showCreateDepartmentForm()">Dodaj oddział</button>
+    }
   </div>
 
   @if (isLoading) {
@@ -18,6 +17,70 @@
 
   @if (errorMessage) {
     <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (successMessage) {
+    <div class="state-card success">{{ successMessage }}</div>
+  }
+
+  @if (!isLoading && isDepartmentFormVisible && canManageStructure) {
+    <form class="form-card" #departmentFormRef="ngForm" (ngSubmit)="saveDepartment()">
+      <div class="form-header">
+        <h3>{{ editingDepartmentId ? 'Edytuj oddział' : 'Dodaj oddział' }}</h3>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          Nazwa oddziału
+          <input name="departmentName" [(ngModel)]="departmentForm.name" required minlength="2" />
+        </label>
+
+        <label>
+          Kod
+          <input
+            name="departmentCode"
+            [(ngModel)]="departmentForm.code"
+            required
+            minlength="2"
+            placeholder="np. CARD"
+          />
+        </label>
+
+        <label>
+          Piętro
+          <input
+            name="departmentFloor"
+            type="number"
+            min="0"
+            [(ngModel)]="departmentForm.floor"
+            required
+          />
+        </label>
+
+        <label>
+          Kierownik oddziału
+          <input
+            name="headDoctorName"
+            [(ngModel)]="departmentForm.headDoctorName"
+            required
+            minlength="2"
+            placeholder="np. dr Anna Nowak"
+          />
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="departmentFormRef.invalid || isSaving">
+          {{
+            isSaving ? 'Zapisywanie...' : editingDepartmentId ? 'Zapisz oddział' : 'Dodaj oddział'
+          }}
+        </button>
+
+        <button type="button" class="secondary-button" (click)="cancelDepartmentForm()">
+          Anuluj
+        </button>
+      </div>
+    </form>
   }
 
   @if (!isLoading && !errorMessage) {
@@ -29,23 +92,177 @@
               <p class="department-code">{{ department.code }}</p>
               <h3>{{ department.name }}</h3>
               <p class="department-meta">
-                Piętro {{ department.floor }} · Kierownik: {{ department.headDoctorName }}
+                Piętro {{ department.floor }} · Kierownik:
+                {{ department.headDoctorName }}
               </p>
             </div>
 
-            <div class="beds-summary">
-              <strong>{{ getFreeBedsCount(department) }}</strong>
-              <span>wolne z {{ getBedsCount(department) }}</span>
+            <div class="department-actions">
+              <div class="beds-summary">
+                <strong>{{ getFreeBedsCount(department) }}</strong>
+                <span>wolne z {{ getBedsCount(department) }}</span>
+              </div>
+
+              @if (canManageStructure) {
+                <div class="actions-row">
+                  <button type="button" class="small-button" (click)="editDepartment(department)">
+                    Edytuj
+                  </button>
+
+                  <button
+                    type="button"
+                    class="small-button"
+                    (click)="showCreateRoomForm(department.id)"
+                  >
+                    Dodaj salę
+                  </button>
+
+                  <button
+                    type="button"
+                    class="danger-button"
+                    (click)="deleteDepartment(department)"
+                  >
+                    Usuń
+                  </button>
+                </div>
+              }
             </div>
           </div>
+
+          @if (roomFormDepartmentId === department.id && canManageStructure) {
+            <form class="inline-form" #roomFormRef="ngForm" (ngSubmit)="saveRoom()">
+              <h4>{{ editingRoomId ? 'Edytuj salę' : 'Dodaj salę' }}</h4>
+
+              <div class="form-grid compact-grid">
+                <label>
+                  Numer sali
+                  <input name="roomNumber" [(ngModel)]="roomForm.number" required minlength="1" />
+                </label>
+
+                <label>
+                  Typ sali
+                  <input
+                    name="roomType"
+                    [(ngModel)]="roomForm.type"
+                    required
+                    minlength="2"
+                    placeholder="np. Sala dwuosobowa"
+                  />
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" [disabled]="roomFormRef.invalid || isSaving">
+                  {{ isSaving ? 'Zapisywanie...' : editingRoomId ? 'Zapisz salę' : 'Dodaj salę' }}
+                </button>
+
+                <button type="button" class="secondary-button" (click)="cancelRoomForm()">
+                  Anuluj
+                </button>
+              </div>
+            </form>
+          }
 
           <div class="rooms-list">
             @for (room of department.rooms; track room.id) {
               <div class="room-card">
                 <div class="room-header">
-                  <strong>Sala {{ room.number }}</strong>
-                  <span>{{ room.type }}</span>
+                  <div>
+                    <strong>Sala {{ room.number }}</strong>
+                    <span>{{ room.type }}</span>
+                  </div>
+
+                  @if (canManageStructure) {
+                    <div class="actions-row">
+                      <button
+                        type="button"
+                        class="small-button"
+                        (click)="editRoom(department.id, room)"
+                      >
+                        Edytuj
+                      </button>
+
+                      <button
+                        type="button"
+                        class="small-button"
+                        (click)="showCreateBedForm(room.id)"
+                      >
+                        Dodaj łóżko
+                      </button>
+
+                      <button type="button" class="danger-button" (click)="deleteRoom(room)">
+                        Usuń
+                      </button>
+                    </div>
+                  }
                 </div>
+
+                @if (bedFormRoomId === room.id && canManageStructure) {
+                  <form class="inline-form" #bedFormRef="ngForm" (ngSubmit)="saveBed()">
+                    <h4>{{ editingBedId ? 'Edytuj łóżko' : 'Dodaj łóżko' }}</h4>
+
+                    <div class="form-grid compact-grid">
+                      <label>
+                        Numer łóżka
+                        <input
+                          name="bedNumber"
+                          [(ngModel)]="bedForm.number"
+                          required
+                          minlength="1"
+                          placeholder="np. 201-A"
+                        />
+                      </label>
+
+                      <label>
+                        Status
+                        <select name="bedStatus" [(ngModel)]="bedForm.status" required>
+                          @for (status of bedStatusOptions; track status.value) {
+                            <option [ngValue]="status.value">{{ status.label }}</option>
+                          }
+                        </select>
+                      </label>
+
+                      <label class="full-width">
+                        Pacjent
+                        <select
+                          name="bedPatientName"
+                          [(ngModel)]="bedForm.patientName"
+                          (ngModelChange)="onPatientSelectionChange()"
+                        >
+                          <option value="">Brak pacjenta</option>
+
+                          @if (bedForm.patientName && !hasSelectedPatientInOptions()) {
+                            <option [value]="bedForm.patientName">
+                              {{ bedForm.patientName }} (spoza listy)
+                            </option>
+                          }
+
+                          @for (patient of patientOptions; track patient.id) {
+                            <option [value]="getPatientOptionValue(patient)">
+                              {{ getPatientOptionLabel(patient) }}
+                            </option>
+                          }
+                        </select>
+                      </label>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="submit" [disabled]="bedFormRef.invalid || isSaving">
+                        {{
+                          isSaving
+                            ? 'Zapisywanie...'
+                            : editingBedId
+                              ? 'Zapisz łóżko'
+                              : 'Dodaj łóżko'
+                        }}
+                      </button>
+
+                      <button type="button" class="secondary-button" (click)="cancelBedForm()">
+                        Anuluj
+                      </button>
+                    </div>
+                  </form>
+                }
 
                 <div class="beds-list">
                   @for (bed of room.beds; track bed.id) {
@@ -60,16 +277,38 @@
                         }
                       </div>
 
-                      <span class="badge" [class]="'status-' + bed.status.toLowerCase()">
-                        {{ getStatusLabel(bed.status) }}
-                      </span>
+                      <div class="bed-actions">
+                        <span class="badge" [class]="'status-' + bed.status.toLowerCase()">
+                          {{ getStatusLabel(bed.status) }}
+                        </span>
+
+                        @if (canManageStructure) {
+                          <button
+                            type="button"
+                            class="small-button"
+                            (click)="editBed(room.id, bed)"
+                          >
+                            Edytuj
+                          </button>
+
+                          <button type="button" class="danger-button" (click)="deleteBed(bed)">
+                            Usuń
+                          </button>
+                        }
+                      </div>
                     </div>
+                  } @empty {
+                    <div class="empty-row">Brak łóżek w sali.</div>
                   }
                 </div>
               </div>
+            } @empty {
+              <div class="empty-row">Brak sal na oddziale.</div>
             }
           </div>
         </article>
+      } @empty {
+        <div class="state-card">Brak oddziałów w systemie.</div>
       }
     </div>
   }

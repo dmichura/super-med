@@ -45,8 +45,15 @@ button:hover {
   filter: brightness(0.94);
 }
 
+button:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+
 .state-card,
-.department-card {
+.department-card,
+.form-card,
+.inline-form {
   border: 1px solid rgba(237, 239, 241, 0.18);
   border-radius: var(--radius-lg);
   background: rgba(237, 239, 241, 0.08);
@@ -54,10 +61,94 @@ button:hover {
 
 .state-card {
   padding: 22px;
+  margin-bottom: 18px;
 }
 
 .state-card.error {
   color: var(--color-accent);
+}
+
+.state-card.success {
+  background: rgba(237, 239, 241, 0.12);
+}
+
+.form-card {
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.form-header h3,
+.inline-form h4 {
+  margin: 0 0 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.compact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: rgba(237, 239, 241, 0.72);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+input,
+select {
+  height: 42px;
+  border: 1px solid rgba(237, 239, 241, 0.18);
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.1);
+  color: var(--color-main);
+  padding: 0 12px;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid rgba(186, 70, 67, 0.55);
+  border-color: transparent;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  background: rgba(237, 239, 241, 0.14);
+}
+
+.danger-button {
+  min-width: auto;
+  height: 34px;
+  padding: 0 12px;
+  background: rgba(186, 70, 67, 0.72);
+}
+
+.small-button {
+  min-width: auto;
+  height: 34px;
+  padding: 0 12px;
+  background: rgba(237, 239, 241, 0.14);
 }
 
 .departments-grid {
@@ -94,6 +185,18 @@ h3 {
   color: rgba(237, 239, 241, 0.72);
 }
 
+.department-actions {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .beds-summary {
   min-width: 116px;
   padding: 12px;
@@ -112,6 +215,12 @@ h3 {
   color: rgba(237, 239, 241, 0.7);
   font-size: 13px;
   font-weight: 700;
+}
+
+.inline-form {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: rgba(0, 46, 70, 0.26);
 }
 
 .rooms-list {
@@ -134,6 +243,8 @@ h3 {
 }
 
 .room-header span {
+  display: block;
+  margin-top: 4px;
   color: rgba(237, 239, 241, 0.68);
 }
 
@@ -155,6 +266,14 @@ h3 {
 .bed-row p {
   margin: 4px 0 0;
   color: rgba(237, 239, 241, 0.68);
+}
+
+.bed-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .badge {
@@ -185,16 +304,35 @@ h3 {
   background: rgba(237, 239, 241, 0.34);
 }
 
+.empty-row {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(237, 239, 241, 0.06);
+  color: rgba(237, 239, 241, 0.7);
+}
+
 @media (max-width: 960px) {
   .page-header,
   .department-header,
+  .room-header,
   .bed-row {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .form-grid,
+  .compact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .department-actions,
   .beds-summary {
     width: 100%;
+    justify-items: start;
     text-align: left;
+  }
+
+  .bed-actions {
+    justify-content: flex-start;
   }
 }

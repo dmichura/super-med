@@ -22,3 +22,48 @@ export interface HospitalDepartment {
   headDoctorName: string;
   rooms: HospitalRoom[];
 }
+
+export interface CreateDepartmentPayload {
+  name: string;
+  code: string;
+  floor: number;
+  headDoctorName: string;
+}
+
+export interface UpdateDepartmentPayload {
+  name?: string;
+  code?: string;
+  floor?: number;
+  headDoctorName?: string;
+}
+
+export interface CreateRoomPayload {
+  number: string;
+  type: string;
+}
+
+export interface UpdateRoomPayload {
+  number?: string;
+  type?: string;
+}
+
+export interface CreateBedPayload {
+  number: string;
+  status: BedStatus;
+  patientName: string | null;
+}
+
+export interface UpdateBedPayload {
+  number?: string;
+  status?: BedStatus;
+  patientName?: string | null;
+}
+
+export interface PatientOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  email: string;
+  isAuthorized: boolean;
+}
