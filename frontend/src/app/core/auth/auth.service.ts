@@ -1,9 +1,38 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 
 const ACCESS_TOKEN_KEY = 'supermed_access_token';
 
-export interface PatientRegisterMockPayload {
+export type UserRole = 'ADMIN' | 'DIRECTOR' | 'EMPLOYEE' | 'PATIENT';
+
+export type UserStatus =
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'PENDING_VERIFICATION'
+  | 'BLOCKED';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  createdAt?: string;
+  lastLoginAt?: string;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  user: AuthUser;
+}
+
+export interface RegisterPatientPayload {
   firstName: string;
   lastName: string;
   pesel: string;
@@ -11,11 +40,21 @@ export interface PatientRegisterMockPayload {
   password: string;
 }
 
+export interface RegisterPatientResponse {
+  message: string;
+  user: AuthUser;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private readonly router: Router) {}
+  private readonly apiUrl = '/api/v1/auth';
+
+  constructor(
+    private readonly httpClient: HttpClient,
+    private readonly router: Router,
+  ) {}
 
   getAccessToken(): string | null {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -29,33 +68,23 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
-  loginMock(email: string, password: string): boolean {
-    if (!email || !password) {
-      return false;
-    }
-
-    // Tymczasowy token testowy do sprawdzenia działania frontendu.
-    // Później zastąpimy to żądaniem POST /api/v1/auth/login.
-    this.setAccessToken('mock-supermed-access-token');
-
-    return true;
+  login(payload: LoginPayload): Observable<LoginResponse> {
+    return this.httpClient
+      .post<LoginResponse>(`${this.apiUrl}/login`, payload)
+      .pipe(
+        tap((response) => {
+          this.setAccessToken(response.accessToken);
+        }),
+      );
   }
 
-  registerPatientMock(payload: PatientRegisterMockPayload): boolean {
-    if (
-      !payload.firstName ||
-      !payload.lastName ||
-      !payload.pesel ||
-      !payload.email ||
-      !payload.password
-    ) {
-      return false;
-    }
-
-    // Tymczasowa rejestracja pacjenta.
-    // Docelowo wyślemy dane do POST /api/v1/patient-portal/register.
-    // Konto pacjenta po rejestracji będzie miało isAuthorized = false.
-    return true;
+  registerPatient(
+    payload: RegisterPatientPayload,
+  ): Observable<RegisterPatientResponse> {
+    return this.httpClient.post<RegisterPatientResponse>(
+      `${this.apiUrl}/register-patient`,
+      payload,
+    );
   }
 
   logout(): void {

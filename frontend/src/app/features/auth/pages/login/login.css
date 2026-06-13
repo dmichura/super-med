@@ -111,3 +111,12 @@ button:disabled {
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.error-message {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(186, 70, 67, 0.18);
+  color: var(--color-accent);
+  font-weight: 700;
+}

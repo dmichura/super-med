@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -53,26 +54,28 @@ export class Register {
 
     this.isSubmitting = true;
 
-    const isRegistered = this.authService.registerPatientMock({
-      firstName: formValue.firstName,
-      lastName: formValue.lastName,
-      pesel: formValue.pesel,
-      email: formValue.email,
-      password: formValue.password,
-    });
+    this.authService
+      .registerPatient({
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        pesel: formValue.pesel,
+        email: formValue.email,
+        password: formValue.password,
+      })
+      .subscribe({
+        next: (response) => {
+          this.isSubmitting = false;
+          this.successMessage = response.message;
 
-    this.isSubmitting = false;
-
-    if (!isRegistered) {
-      this.errorMessage = 'Nie udało się utworzyć konta pacjenta.';
-      return;
-    }
-
-    this.successMessage =
-      'Konto pacjenta zostało utworzone. Dostęp do dokumentacji zostanie odblokowany po osobistej weryfikacji w placówce.';
-
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 2500);
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2500);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.isSubmitting = false;
+          this.errorMessage =
+            error.error?.message ?? 'Nie udało się utworzyć konta pacjenta.';
+        },
+      });
   }
 }
