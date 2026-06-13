@@ -39,7 +39,7 @@ export class ReportsService {
           isSensitive: true,
         },
       }),
-      this.prismaService.medicalRecordAuditEntry.count(),
+      this.prismaService.auditEvent.count(),
       this.prismaService.hospitalDepartment.findMany({
         orderBy: [
           {

@@ -72,6 +72,32 @@ enum DocumentStatus {
   ARCHIVED
 }
 
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  VIEW
+  CREATE
+  UPDATE
+  DELETE
+  EXPORT
+  AUTHORIZE
+}
+
+enum AuditResourceType {
+  AUTH
+  PATIENT
+  EMPLOYEE
+  MEDICAL_RECORD
+  HOSPITAL_STRUCTURE
+  REPORT
+}
+
+enum AuditResult {
+  SUCCESS
+  DENIED
+  ERROR
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
@@ -221,4 +247,22 @@ model PatientDocument {
   patient Patient @relation(fields: [patientId], references: [id])
 
   @@map("patient_documents")
+}
+
+model AuditEvent {
+  id           Int               @id @default(autoincrement())
+  code         String            @unique
+  actorName    String            @map("actor_name")
+  actorRole    String            @map("actor_role")
+  action       AuditAction
+  resourceType AuditResourceType @map("resource_type")
+  resourceName String            @map("resource_name")
+  occurredAt   DateTime          @map("occurred_at")
+  ipAddress    String            @map("ip_address")
+  result       AuditResult
+  reason       String
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  @@map("audit_events")
 }

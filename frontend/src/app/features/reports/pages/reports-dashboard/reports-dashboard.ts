@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ReportDashboardData } from '../../../../shared/models/report.model';
 import { ReportsService } from '../../reports.service';
 
@@ -10,6 +10,7 @@ import { ReportsService } from '../../reports.service';
 })
 export class ReportsDashboard implements OnInit {
   private readonly reportsService = inject(ReportsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   reportData: ReportDashboardData | null = null;
   isLoading = true;
@@ -27,10 +28,12 @@ export class ReportsDashboard implements OnInit {
       next: (reportData) => {
         this.reportData = reportData;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać raportów.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }

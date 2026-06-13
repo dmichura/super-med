@@ -648,6 +648,103 @@ async function seedDocuments() {
   }
 }
 
+async function seedAuditEvents() {
+  const auditEvents = [
+    {
+      code: 'AUD-001',
+      actorName: 'dr Anna Nowak',
+      actorRole: 'EMPLOYEE',
+      action: 'VIEW' as const,
+      resourceType: 'MEDICAL_RECORD' as const,
+      resourceName: 'Wizyta kontrolna po hospitalizacji',
+      occurredAt: new Date('2026-06-10T10:20:00.000Z'),
+      ipAddress: '192.168.1.21',
+      result: 'SUCCESS' as const,
+      reason: 'Odczyt dokumentacji pacjenta podczas opieki medycznej.',
+    },
+    {
+      code: 'AUD-002',
+      actorName: 'Katarzyna Wójcik',
+      actorRole: 'EMPLOYEE',
+      action: 'AUTHORIZE' as const,
+      resourceType: 'PATIENT' as const,
+      resourceName: 'Jan Kowalski',
+      occurredAt: new Date('2026-06-10T11:05:00.000Z'),
+      ipAddress: '192.168.1.34',
+      result: 'SUCCESS' as const,
+      reason: 'Osobista weryfikacja tożsamości pacjenta w placówce.',
+    },
+    {
+      code: 'AUD-003',
+      actorName: 'Michał Kamiński',
+      actorRole: 'ADMIN',
+      action: 'UPDATE' as const,
+      resourceType: 'EMPLOYEE' as const,
+      resourceName: 'Ewa Lewandowska',
+      occurredAt: new Date('2026-06-10T12:15:00.000Z'),
+      ipAddress: '192.168.1.10',
+      result: 'SUCCESS' as const,
+      reason: 'Zmiana statusu konta pracownika.',
+    },
+    {
+      code: 'AUD-004',
+      actorName: 'Nieznany użytkownik',
+      actorRole: 'ANONYMOUS',
+      action: 'LOGIN' as const,
+      resourceType: 'AUTH' as const,
+      resourceName: 'Panel SuperMED',
+      occurredAt: new Date('2026-06-10T13:02:00.000Z'),
+      ipAddress: '10.0.0.45',
+      result: 'DENIED' as const,
+      reason: 'Nieprawidłowe dane logowania.',
+    },
+    {
+      code: 'AUD-005',
+      actorName: 'Dyrektor placówki',
+      actorRole: 'DIRECTOR',
+      action: 'VIEW' as const,
+      resourceType: 'REPORT' as const,
+      resourceName: 'Dashboard raportowy',
+      occurredAt: new Date('2026-06-10T14:30:00.000Z'),
+      ipAddress: '192.168.1.5',
+      result: 'SUCCESS' as const,
+      reason: 'Analiza obłożenia oddziałów.',
+    },
+    {
+      code: 'AUD-006',
+      actorName: 'dr Piotr Zieliński',
+      actorRole: 'EMPLOYEE',
+      action: 'EXPORT' as const,
+      resourceType: 'MEDICAL_RECORD' as const,
+      resourceName: 'Rozpoznanie neurologiczne',
+      occurredAt: new Date('2026-06-10T15:12:00.000Z'),
+      ipAddress: '192.168.1.22',
+      result: 'SUCCESS' as const,
+      reason: 'Eksport dokumentacji do systemu EDM.',
+    },
+  ];
+
+  for (const auditEvent of auditEvents) {
+    await prisma.auditEvent.upsert({
+      where: {
+        code: auditEvent.code,
+      },
+      update: {
+        actorName: auditEvent.actorName,
+        actorRole: auditEvent.actorRole,
+        action: auditEvent.action,
+        resourceType: auditEvent.resourceType,
+        resourceName: auditEvent.resourceName,
+        occurredAt: auditEvent.occurredAt,
+        ipAddress: auditEvent.ipAddress,
+        result: auditEvent.result,
+        reason: auditEvent.reason,
+      },
+      create: auditEvent,
+    });
+  }
+}
+
 async function main() {
   await seedStaffUsers();
   await seedPatients();
@@ -655,6 +752,7 @@ async function main() {
   await seedHospitalStructure();
   await seedMedicalRecords();
   await seedDocuments();
+  await seedAuditEvents();
 
   console.log('Seed zakończony.');
   console.log('');

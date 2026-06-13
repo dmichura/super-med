@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import {
   AuditAction,
   AuditEvent,
@@ -15,6 +15,7 @@ import { AuditService } from '../../audit.service';
 })
 export class AuditEventsList implements OnInit {
   private readonly auditService = inject(AuditService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   auditEvents: AuditEvent[] = [];
   isLoading = true;
@@ -32,10 +33,12 @@ export class AuditEventsList implements OnInit {
       next: (auditEvents) => {
         this.auditEvents = auditEvents;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać zdarzeń audytu.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }

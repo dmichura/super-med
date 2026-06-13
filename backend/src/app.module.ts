@@ -10,6 +10,7 @@ import { HospitalStructureModule } from './hospital-structure/hospital-structure
 import { MedicalRecordsModule } from './medical-records/medical-records.module';
 import { DocumentsModule } from './documents/documents.module';
 import { ReportsModule } from './reports/reports.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
  imports: [
@@ -24,7 +25,8 @@ import { ReportsModule } from './reports/reports.module';
     HospitalStructureModule,
     MedicalRecordsModule,
     DocumentsModule,
-    ReportsModule
+    ReportsModule,
+    AuditModule
   ],
   controllers: [AppController],
   providers: [AppService],
