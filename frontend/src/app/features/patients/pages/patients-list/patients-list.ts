@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Patient } from '../../../../shared/models/patient.model';
 import { PatientsService } from '../../patients.service';
@@ -11,6 +11,7 @@ import { PatientsService } from '../../patients.service';
 })
 export class PatientsList implements OnInit {
   private readonly patientsService = inject(PatientsService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   patients: Patient[] = [];
   isLoading = true;
@@ -28,10 +29,12 @@ export class PatientsList implements OnInit {
       next: (patients) => {
         this.patients = patients;
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Nie udało się pobrać listy pacjentów.';
         this.isLoading = false;
+        this.changeDetectorRef.detectChanges();
       },
     });
   }
