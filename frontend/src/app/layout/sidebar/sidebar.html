@@ -8,14 +8,10 @@
   </div>
 
   <nav class="nav">
-    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-    <a routerLink="/patient-portal" routerLinkActive="active">Portal pacjenta</a>
-    <a routerLink="/patients" routerLinkActive="active">Pacjenci</a>
-    <a routerLink="/employees" routerLinkActive="active">Pracownicy</a>
-    <a routerLink="/hospital-structure" routerLinkActive="active">Oddziały i łóżka</a>
-    <a routerLink="/medical-records" routerLinkActive="active">Dokumentacja</a>
-    <a routerLink="/reports" routerLinkActive="active">Raporty</a>
-    <a routerLink="/documents" routerLinkActive="active">Dokumenty</a>
-    <a routerLink="/audit" routerLinkActive="active">Audyt</a>
+    @for (item of visibleNavItems; track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active">
+        {{ item.label }}
+      </a>
+    }
   </nav>
 </aside>
