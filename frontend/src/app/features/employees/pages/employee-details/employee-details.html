@@ -18,18 +18,22 @@
       <div>
         <p class="eyebrow">Pracownik</p>
         <h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
-        <p>
-          Szczegóły profilu pracownika, rola systemowa i przypisanie organizacyjne.
-        </p>
+        <p>Szczegóły profilu pracownika, rola systemowa i przypisanie organizacyjne.</p>
       </div>
 
-      <button type="button" [disabled]="isChangingStatus" (click)="toggleStatus()">
-        @if (isChangingStatus) {
-          Zmienianie...
-        } @else {
-          {{ employee.isActive ? 'Dezaktywuj' : 'Aktywuj' }}
-        }
-      </button>
+      <div class="header-actions">
+        <a class="secondary-button" [routerLink]="['/employees', employee.id, 'edit']">
+          Edytuj dane
+        </a>
+
+        <button type="button" [disabled]="isChangingStatus" (click)="toggleStatus()">
+          @if (isChangingStatus) {
+            Zmienianie...
+          } @else {
+            {{ employee.isActive ? 'Dezaktywuj' : 'Aktywuj' }}
+          }
+        </button>
+      </div>
     </div>
 
     <div class="details-grid">

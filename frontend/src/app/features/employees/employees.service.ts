@@ -1,7 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Employee } from '../../shared/models/employee.model';
+import {
+  CreateEmployeePayload,
+  Employee,
+  UpdateEmployeePayload,
+} from '../../shared/models/employee.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +19,16 @@ export class EmployeesService {
     return this.httpClient.get<Employee[]>(this.apiUrl);
   }
 
+  createEmployee(payload: CreateEmployeePayload): Observable<Employee> {
+    return this.httpClient.post<Employee>(this.apiUrl, payload);
+  }
+
   getEmployeeById(employeeId: number): Observable<Employee> {
     return this.httpClient.get<Employee>(`${this.apiUrl}/${employeeId}`);
+  }
+
+  updateEmployee(employeeId: number, payload: UpdateEmployeePayload): Observable<Employee> {
+    return this.httpClient.patch<Employee>(`${this.apiUrl}/${employeeId}`, payload);
   }
 
   toggleEmployeeStatus(employeeId: number): Observable<Employee> {

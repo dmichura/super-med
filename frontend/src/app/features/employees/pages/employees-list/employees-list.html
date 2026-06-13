@@ -3,13 +3,10 @@
     <div>
       <p class="eyebrow">Pracownicy</p>
       <h2>Lista pracowników</h2>
-      <p>
-        Widok testowy modułu pracowników. Docelowo dane będą pobierane z endpointu
-        <strong>GET /api/v1/employees</strong>.
-      </p>
+      <p>Lista pracowników z możliwością filtrowania, dodawania nowych kont oraz edycji danych.</p>
     </div>
 
-    <button type="button">Dodaj pracownika</button>
+    <a class="primary-button" routerLink="/employees/new">Dodaj pracownika</a>
   </div>
 
   @if (isLoading) {
@@ -21,6 +18,53 @@
   }
 
   @if (!isLoading && !errorMessage) {
+    <div class="filters-card">
+      <label>
+        Szukaj
+        <input
+          type="search"
+          placeholder="Imię, nazwisko, email, telefon, oddział..."
+          [(ngModel)]="searchTerm"
+        />
+      </label>
+
+      <label>
+        Rola
+        <select [(ngModel)]="roleFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="ADMIN">Administrator</option>
+          <option value="DIRECTOR">Dyrektor</option>
+          <option value="EMPLOYEE">Pracownik</option>
+        </select>
+      </label>
+
+      <label>
+        Funkcja
+        <select [(ngModel)]="functionFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="DOCTOR">Lekarz</option>
+          <option value="NURSE">Pielęgniarka</option>
+          <option value="PARAMEDIC">Ratownik</option>
+          <option value="RECEPTIONIST">Recepcja</option>
+          <option value="SECURITY">Ochrona</option>
+          <option value="IT_ADMIN">Administrator IT</option>
+        </select>
+      </label>
+
+      <label>
+        Status
+        <select [(ngModel)]="statusFilter">
+          <option value="ALL">Wszyscy</option>
+          <option value="ACTIVE">Aktywni</option>
+          <option value="INACTIVE">Nieaktywni</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="results-summary">
+      Wyniki: {{ filteredEmployees.length }} / {{ employees.length }}
+    </div>
+
     <div class="table-card">
       <table>
         <thead>
@@ -37,7 +81,7 @@
         </thead>
 
         <tbody>
-          @for (employee of employees; track employee.id) {
+          @for (employee of filteredEmployees; track employee.id) {
             <tr>
               <td>
                 <strong>{{ employee.firstName }} {{ employee.lastName }}</strong>
@@ -57,10 +101,18 @@
                 </span>
               </td>
               <td>
-                <a class="details-link" [routerLink]="['/employees', employee.id]">
-                  Szczegóły
-                </a>
+                <div class="row-actions">
+                  <a class="details-link" [routerLink]="['/employees', employee.id]"> Szczegóły </a>
+
+                  <a class="details-link" [routerLink]="['/employees', employee.id, 'edit']">
+                    Edytuj
+                  </a>
+                </div>
               </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">Brak pracowników spełniających wybrane filtry.</td>
             </tr>
           }
         </tbody>

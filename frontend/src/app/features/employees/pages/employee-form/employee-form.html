@@ -1,0 +1,129 @@
+<section class="employee-form-page">
+  <a class="back-link" routerLink="/employees">← Wróć do listy pracowników</a>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie danych pracownika...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading) {
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Pracownicy</p>
+        <h2>{{ isEditMode ? 'Edytuj pracownika' : 'Dodaj pracownika' }}</h2>
+        <p>
+          Formularz pozwala utworzyć konto pracownika, nadać rolę systemową oraz przypisać funkcję zawodową.
+        </p>
+      </div>
+    </div>
+
+    <form class="form-card" #employeeForm="ngForm" (ngSubmit)="saveEmployee()">
+      <div class="form-grid">
+        <label>
+          Imię
+          <input
+            name="firstName"
+            [(ngModel)]="form.firstName"
+            required
+            minlength="2"
+          />
+        </label>
+
+        <label>
+          Nazwisko
+          <input
+            name="lastName"
+            [(ngModel)]="form.lastName"
+            required
+            minlength="2"
+          />
+        </label>
+
+        <label>
+          Email
+          <input
+            name="email"
+            type="email"
+            [(ngModel)]="form.email"
+            required
+          />
+        </label>
+
+        <label>
+          Telefon
+          <input
+            name="phoneNumber"
+            [(ngModel)]="form.phoneNumber"
+            required
+            minlength="7"
+          />
+        </label>
+
+        <label>
+          Rola systemowa
+          <select name="systemRole" [(ngModel)]="form.systemRole" required>
+            @for (role of systemRoleOptions; track role.value) {
+              <option [ngValue]="role.value">{{ role.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Funkcja
+          <select
+            name="employeeFunction"
+            [(ngModel)]="form.employeeFunction"
+            required
+          >
+            @for (employeeFunction of employeeFunctionOptions; track employeeFunction.value) {
+              <option [ngValue]="employeeFunction.value">
+                {{ employeeFunction.label }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="full-width">
+          Oddział
+          <input
+            name="departmentName"
+            [(ngModel)]="form.departmentName"
+            placeholder="np. Oddział Kardiologii"
+          />
+        </label>
+
+        <label class="full-width">
+          {{ isEditMode ? 'Nowe hasło' : 'Hasło startowe' }}
+          <input
+            name="password"
+            type="password"
+            [(ngModel)]="form.password"
+            [required]="!isEditMode"
+            minlength="8"
+            placeholder="{{ isEditMode ? 'Zostaw puste, jeśli nie zmieniasz hasła' : 'Minimum 8 znaków' }}"
+          />
+        </label>
+
+        <label class="checkbox-row full-width">
+          <input
+            name="isActive"
+            type="checkbox"
+            [(ngModel)]="form.isActive"
+          />
+          Pracownik aktywny
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="employeeForm.invalid || isSaving">
+          {{ isSaving ? 'Zapisywanie...' : isEditMode ? 'Zapisz zmiany' : 'Dodaj pracownika' }}
+        </button>
+
+        <a routerLink="/employees">Anuluj</a>
+      </div>
+    </form>
+  }
+</section>

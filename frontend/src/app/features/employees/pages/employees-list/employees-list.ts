@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   Employee,
@@ -7,9 +8,13 @@ import {
 } from '../../../../shared/models/employee.model';
 import { EmployeesService } from '../../employees.service';
 
+type RoleFilter = 'ALL' | EmployeeSystemRole;
+type FunctionFilter = 'ALL' | EmployeeFunction;
+type StatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
+
 @Component({
   selector: 'app-employees-list',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './employees-list.html',
   styleUrl: './employees-list.css',
 })
@@ -18,11 +23,41 @@ export class EmployeesList implements OnInit {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   employees: Employee[] = [];
+  searchTerm = '';
+  roleFilter: RoleFilter = 'ALL';
+  functionFilter: FunctionFilter = 'ALL';
+  statusFilter: StatusFilter = 'ALL';
   isLoading = true;
   errorMessage = '';
 
   ngOnInit(): void {
     this.loadEmployees();
+  }
+
+  get filteredEmployees(): Employee[] {
+    const searchValue = this.searchTerm.trim().toLowerCase();
+
+    return this.employees.filter((employee) => {
+      const matchesSearch =
+        !searchValue ||
+        employee.firstName.toLowerCase().includes(searchValue) ||
+        employee.lastName.toLowerCase().includes(searchValue) ||
+        employee.email.toLowerCase().includes(searchValue) ||
+        employee.phoneNumber.toLowerCase().includes(searchValue) ||
+        (employee.departmentName ?? '').toLowerCase().includes(searchValue);
+
+      const matchesRole = this.roleFilter === 'ALL' || employee.systemRole === this.roleFilter;
+
+      const matchesFunction =
+        this.functionFilter === 'ALL' || employee.employeeFunction === this.functionFilter;
+
+      const matchesStatus =
+        this.statusFilter === 'ALL' ||
+        (this.statusFilter === 'ACTIVE' && employee.isActive) ||
+        (this.statusFilter === 'INACTIVE' && !employee.isActive);
+
+      return matchesSearch && matchesRole && matchesFunction && matchesStatus;
+    });
   }
 
   loadEmployees(): void {

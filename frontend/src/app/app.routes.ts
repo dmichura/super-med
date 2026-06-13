@@ -85,6 +85,28 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'employees/new',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+          import('./features/employees/pages/employee-form/employee-form').then(
+            (m) => m.EmployeeForm,
+          ),
+      },
+      {
+        path: 'employees/:id/edit',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'DIRECTOR'],
+        },
+        loadComponent: () =>
+          import('./features/employees/pages/employee-form/employee-form').then(
+            (m) => m.EmployeeForm,
+          ),
+      },
+      {
         path: 'employees/:id',
         canActivate: [roleGuard],
         data: {

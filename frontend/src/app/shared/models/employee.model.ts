@@ -19,3 +19,27 @@ export interface Employee {
   departmentName: string | null;
   isActive: boolean;
 }
+
+export interface CreateEmployeePayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  systemRole: EmployeeSystemRole;
+  employeeFunction: EmployeeFunction;
+  departmentName: string | null;
+  password: string;
+  isActive: boolean;
+}
+
+export interface UpdateEmployeePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  systemRole?: EmployeeSystemRole;
+  employeeFunction?: EmployeeFunction;
+  departmentName?: string | null;
+  password?: string;
+  isActive?: boolean;
+}

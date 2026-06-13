@@ -1,9 +1,11 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
   Patch,
+  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -11,7 +13,10 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
+import type { DoctorOptionRow, EmployeeResponse } from './employees.service';
 
 interface RequestWithUser {
   user: JwtPayload;
@@ -28,20 +33,50 @@ export class EmployeesController {
 
   @Get()
   @Roles('ADMIN', 'DIRECTOR')
-  getEmployees() {
+  getEmployees(): Promise<EmployeeResponse[]> {
     return this.employeesService.getEmployees();
   }
 
   @Get('doctors/options')
   @Roles('ADMIN', 'DIRECTOR', 'EMPLOYEE')
-  getActiveDoctorOptions() {
+  getActiveDoctorOptions(): Promise<DoctorOptionRow[]> {
     return this.employeesService.getActiveDoctorOptions();
+  }
+
+  @Post()
+  @Roles('ADMIN', 'DIRECTOR')
+  createEmployee(
+    @Body() createEmployeeDto: CreateEmployeeDto,
+    @Req() request: RequestWithUser,
+  ): Promise<EmployeeResponse> {
+    return this.employeesService.createEmployee(
+      createEmployeeDto,
+      request.user,
+      this.getIpAddress(request),
+    );
   }
 
   @Get(':id')
   @Roles('ADMIN', 'DIRECTOR')
-  getEmployeeById(@Param('id', ParseIntPipe) employeeId: number) {
+  getEmployeeById(
+    @Param('id', ParseIntPipe) employeeId: number,
+  ): Promise<EmployeeResponse> {
     return this.employeesService.getEmployeeById(employeeId);
+  }
+
+  @Patch(':id')
+  @Roles('ADMIN', 'DIRECTOR')
+  updateEmployee(
+    @Param('id', ParseIntPipe) employeeId: number,
+    @Body() updateEmployeeDto: UpdateEmployeeDto,
+    @Req() request: RequestWithUser,
+  ): Promise<EmployeeResponse> {
+    return this.employeesService.updateEmployee(
+      employeeId,
+      updateEmployeeDto,
+      request.user,
+      this.getIpAddress(request),
+    );
   }
 
   @Patch(':id/status')
@@ -49,7 +84,7 @@ export class EmployeesController {
   toggleEmployeeStatus(
     @Param('id', ParseIntPipe) employeeId: number,
     @Req() request: RequestWithUser,
-  ) {
+  ): Promise<EmployeeResponse> {
     return this.employeesService.toggleEmployeeStatus(
       employeeId,
       request.user,
