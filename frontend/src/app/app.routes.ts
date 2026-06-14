@@ -140,6 +140,28 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'medical-records/new',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+          import('./features/medical-records/pages/medical-record-form/medical-record-form').then(
+            (m) => m.MedicalRecordForm,
+          ),
+      },
+      {
+        path: 'medical-records/:id/edit',
+        canActivate: [roleGuard],
+        data: {
+          roles: ['ADMIN', 'EMPLOYEE'],
+        },
+        loadComponent: () =>
+          import('./features/medical-records/pages/medical-record-form/medical-record-form').then(
+            (m) => m.MedicalRecordForm,
+          ),
+      },
+      {
         path: 'medical-records/:id',
         canActivate: [roleGuard],
         data: {

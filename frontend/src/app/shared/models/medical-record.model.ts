@@ -31,3 +31,52 @@ export interface MedicalRecord {
   description: string;
   auditTrail: MedicalRecordAuditEntry[];
 }
+
+export interface CreateMedicalRecordPayload {
+  patientId: number;
+  doctorName: string;
+  departmentName: string;
+  type: MedicalRecordType;
+  title: string;
+  status: MedicalRecordStatus;
+  isSensitive: boolean;
+  description: string;
+}
+
+export interface UpdateMedicalRecordPayload {
+  patientId?: number;
+  doctorName?: string;
+  departmentName?: string;
+  type?: MedicalRecordType;
+  title?: string;
+  status?: MedicalRecordStatus;
+  isSensitive?: boolean;
+  description?: string;
+}
+
+export interface MedicalRecordPatientOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  pesel: string;
+  email: string;
+  isAuthorized: boolean;
+  assignedDoctorName: string | null;
+  isActive: boolean;
+}
+
+export interface MedicalRecordDoctorOption {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  departmentName: string | null;
+}
+
+export interface MedicalRecordDepartmentOption {
+  id: number;
+  name: string;
+  code: string;
+  floor: number;
+  headDoctorName: string;
+}

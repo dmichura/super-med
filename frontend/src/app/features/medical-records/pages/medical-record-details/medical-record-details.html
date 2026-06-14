@@ -1,7 +1,5 @@
 <section class="medical-record-details-page">
-  <a class="back-link" routerLink="/medical-records">
-    ← Wróć do dokumentacji medycznej
-  </a>
+  <a class="back-link" routerLink="/medical-records"> ← Wróć do dokumentacji medycznej </a>
 
   @if (isLoading) {
     <div class="state-card">Ładowanie wpisu dokumentacji medycznej...</div>
@@ -16,14 +14,18 @@
       <div>
         <p class="eyebrow">Dokumentacja medyczna</p>
         <h2>{{ medicalRecord.title }}</h2>
-        <p>
-          Szczegóły wpisu medycznego oraz podstawowy audyt dostępu do danych wrażliwych.
-        </p>
+        <p>Szczegóły wpisu medycznego oraz podstawowy audyt dostępu do danych wrażliwych.</p>
       </div>
 
-      <span class="badge sensitive-badge">
-        {{ medicalRecord.isSensitive ? 'Dane wrażliwe' : 'Dane standardowe' }}
-      </span>
+      <div class="header-actions">
+        <a class="secondary-button" [routerLink]="['/medical-records', medicalRecord.id, 'edit']">
+          Edytuj wpis
+        </a>
+
+        <span class="badge sensitive-badge">
+          {{ medicalRecord.isSensitive ? 'Dane wrażliwe' : 'Dane standardowe' }}
+        </span>
+      </div>
     </div>
 
     <div class="details-grid">

@@ -1,0 +1,142 @@
+<section class="medical-record-form-page">
+  <a class="back-link" routerLink="/medical-records">
+    ← Wróć do dokumentacji medycznej
+  </a>
+
+  @if (isLoading) {
+    <div class="state-card">Ładowanie wpisu medycznego...</div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">{{ errorMessage }}</div>
+  }
+
+  @if (!isLoading) {
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Dokumentacja medyczna</p>
+        <h2>{{ isEditMode ? 'Edytuj wpis medyczny' : 'Dodaj wpis medyczny' }}</h2>
+        <p>
+          Formularz pozwala utworzyć albo zmienić wpis dokumentacji medycznej pacjenta.
+        </p>
+      </div>
+    </div>
+
+    <form
+      class="form-card"
+      #medicalRecordForm="ngForm"
+      (ngSubmit)="saveMedicalRecord()"
+    >
+      <div class="form-grid">
+        <label>
+          Pacjent
+          <select name="patientId" [(ngModel)]="form.patientId" required>
+            <option [ngValue]="null">Wybierz pacjenta</option>
+
+            @for (patient of patientOptions; track patient.id) {
+              <option [ngValue]="patient.id">
+                {{ getPatientOptionLabel(patient) }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Lekarz
+          <select name="doctorName" [(ngModel)]="form.doctorName" required>
+            <option value="">Wybierz lekarza</option>
+
+            @if (form.doctorName && !hasSelectedDoctorInOptions()) {
+              <option [value]="form.doctorName">
+                {{ form.doctorName }} (spoza listy)
+              </option>
+            }
+
+            @for (doctor of doctorOptions; track doctor.id) {
+              <option [value]="getDoctorAssignedName(doctor)">
+                {{ getDoctorOptionLabel(doctor) }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Oddział
+          <select name="departmentName" [(ngModel)]="form.departmentName" required>
+            <option value="">Wybierz oddział</option>
+
+            @if (form.departmentName && !hasSelectedDepartmentInOptions()) {
+              <option [value]="form.departmentName">
+                {{ form.departmentName }} (spoza listy)
+              </option>
+            }
+
+            @for (department of departmentOptions; track department.id) {
+              <option [value]="department.name">
+                {{ getDepartmentOptionLabel(department) }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Typ wpisu
+          <select name="type" [(ngModel)]="form.type" required>
+            @for (type of typeOptions; track type.value) {
+              <option [ngValue]="type.value">{{ type.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Status
+          <select name="status" [(ngModel)]="form.status" required>
+            @for (status of statusOptions; track status.value) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Tytuł
+          <input
+            name="title"
+            [(ngModel)]="form.title"
+            required
+            minlength="3"
+            placeholder="np. Wizyta kontrolna"
+          />
+        </label>
+
+        <label class="checkbox-row full-width">
+          <input
+            name="isSensitive"
+            type="checkbox"
+            [(ngModel)]="form.isSensitive"
+          />
+          Dane wrażliwe
+        </label>
+
+        <label class="full-width">
+          Opis medyczny
+          <textarea
+            name="description"
+            [(ngModel)]="form.description"
+            required
+            minlength="5"
+            rows="8"
+            placeholder="Wpisz opis medyczny..."
+          ></textarea>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="medicalRecordForm.invalid || isSaving">
+          {{ isSaving ? 'Zapisywanie...' : isEditMode ? 'Zapisz zmiany' : 'Dodaj wpis' }}
+        </button>
+
+        <a routerLink="/medical-records">Anuluj</a>
+      </div>
+    </form>
+  }
+</section>

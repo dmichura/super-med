@@ -4,12 +4,12 @@
       <p class="eyebrow">Dokumentacja medyczna</p>
       <h2>Lista wpisów medycznych</h2>
       <p>
-        Widok testowy dokumentacji medycznej. Docelowo dane będą pobierane z endpointu
-        <strong>GET /api/v1/medical-records</strong>.
+        Lista wpisów dokumentacji medycznej z możliwością filtrowania, dodawania, edycji i usuwania
+        wpisów.
       </p>
     </div>
 
-    <button type="button">Dodaj wpis</button>
+    <a class="primary-button" routerLink="/medical-records/new">Dodaj wpis</a>
   </div>
 
   @if (isLoading) {
@@ -21,6 +21,52 @@
   }
 
   @if (!isLoading && !errorMessage) {
+    <div class="filters-card">
+      <label>
+        Szukaj
+        <input
+          type="search"
+          placeholder="Pacjent, PESEL, lekarz, tytuł, oddział..."
+          [(ngModel)]="searchTerm"
+        />
+      </label>
+
+      <label>
+        Typ
+        <select [(ngModel)]="typeFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="VISIT">Wizyta</option>
+          <option value="DIAGNOSIS">Rozpoznanie</option>
+          <option value="PRESCRIPTION">Recepta</option>
+          <option value="LAB_RESULT">Wynik badania</option>
+          <option value="DISCHARGE_SUMMARY">Wypis</option>
+        </select>
+      </label>
+
+      <label>
+        Status
+        <select [(ngModel)]="statusFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="DRAFT">Roboczy</option>
+          <option value="FINAL">Zatwierdzony</option>
+          <option value="ARCHIVED">Zarchiwizowany</option>
+        </select>
+      </label>
+
+      <label>
+        Wrażliwe
+        <select [(ngModel)]="sensitiveFilter">
+          <option value="ALL">Wszystkie</option>
+          <option value="SENSITIVE">Tak</option>
+          <option value="STANDARD">Nie</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="results-summary">
+      Wyniki: {{ filteredMedicalRecords.length }} / {{ medicalRecords.length }}
+    </div>
+
     <div class="table-card">
       <table>
         <thead>
@@ -39,7 +85,7 @@
         </thead>
 
         <tbody>
-          @for (record of medicalRecords; track record.id) {
+          @for (record of filteredMedicalRecords; track record.id) {
             <tr>
               <td>
                 <strong>{{ record.patientName }}</strong>
@@ -61,10 +107,29 @@
                 </span>
               </td>
               <td>
-                <a class="details-link" [routerLink]="['/medical-records', record.id]">
-                  Szczegóły
-                </a>
+                <div class="row-actions">
+                  <a class="details-link" [routerLink]="['/medical-records', record.id]">
+                    Szczegóły
+                  </a>
+
+                  <a class="details-link" [routerLink]="['/medical-records', record.id, 'edit']">
+                    Edytuj
+                  </a>
+
+                  <button
+                    type="button"
+                    class="danger-link"
+                    [disabled]="isDeletingRecordId === record.id"
+                    (click)="deleteMedicalRecord(record)"
+                  >
+                    {{ isDeletingRecordId === record.id ? 'Usuwanie...' : 'Usuń' }}
+                  </button>
+                </div>
               </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10">Brak wpisów spełniających wybrane filtry.</td>
             </tr>
           }
         </tbody>
